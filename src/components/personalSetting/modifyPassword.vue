@@ -3,17 +3,17 @@
     <div class="center">
       <div class="inputWapper">
         <span class="labelName">旧密码</span>
-        <el-input class="inputArea"></el-input>
+        <el-input class="inputArea" type="password" v-model="OldPassWord"></el-input>
       </div>
     </div>
     <div class="center">
       <div class="inputWapper">
         <span class="labelName">新密码</span>
-        <el-input class="inputArea"></el-input>
+        <el-input class="inputArea" type="password" v-model="NewPassWord"></el-input>
       </div>
     </div>
     <div class="center">
-      <el-button class="submitBtn" type="primary">确认修改</el-button> 
+      <el-button class="submitBtn" type="primary" @click="updatePassword">确认修改</el-button> 
     </div>
   </div>
 </template>
@@ -23,7 +23,8 @@ export default {
   name: 'modifyPassword',
   data () {
     return {
-      msg: '欢迎来到后台管理系统'
+      OldPassWord: '',
+      NewPassWord: ''
     }
   },
   activated(){
@@ -32,6 +33,33 @@ export default {
       name:"修改密码",
       isActive:true
     });
+  },
+  methods:{
+    updatePassword(){
+      this.$axios.post(this.$store.commonData.state.url+"Manage/UpdatePass",
+        { OldPassWord:this.OldPassWord,
+         NewPassWord:this.NewPassWord,
+        })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          this.NewPassWord="";
+          this.OldPassWord="";
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'success'
+          });
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+        
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
   }
 }
 </script>

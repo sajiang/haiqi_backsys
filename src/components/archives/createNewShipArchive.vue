@@ -244,7 +244,7 @@ export default {
 	              type: 'error'
 	            });
 	        }
-		})
+		});
   	}
   }
 }

@@ -1,8 +1,10 @@
 <template>
   <div class="uploadImg">
-    <slot>
-      <div class="chooseImg" @click="dialogVisible = true">{{imgObjs.length>0?"已选择"+imgObjs.length+"张图片":"选择图片"}}</div>
-    </slot>
+    <div class="chooseImg" @click="dialogVisible = true">
+      <slot>
+        {{imgObjs.length>0?"已选择"+imgObjs.length+"张图片":"选择图片"}}
+      </slot>
+    </div>
     <el-dialog
       title="上传图片"
       :visible.sync="dialogVisible"
@@ -136,6 +138,7 @@ export default {
     font-size: inherit;
     height: 40px;
     line-height: 40px;
+    white-space: nowrap;
     outline: 0;
     padding: 0 15px;
 }

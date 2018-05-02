@@ -67,12 +67,12 @@
 							});
 			      		}else if(this.activeName=="person"){
 			      			this.queryList.push({
-								value:response.data.RetData[i].LinkMan,
+								value:response.data.RetData[i].UserName,
 								id:response.data.RetData[i].Id,
 							});
 			      		}else if (this.activeName=="telphone") {
 			      			this.queryList.push({
-								value:response.data.RetData[i].Mobile,
+								value:response.data.RetData[i].TelPhone,
 								id:response.data.RetData[i].Id,
 							});
 			      		}else if (this.activeName=="ship") {
@@ -95,7 +95,7 @@
 			});
     	},
 	  	handleClick:function(tab, event) {
-		    //console.log(tab, event);
+		   this.keyword="";
 		},
 		handleSelect(item) {
 	        let id=item.id;

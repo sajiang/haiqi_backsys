@@ -25,6 +25,8 @@ const tabs = new Vuex.Store({
 			state.tabs[i].isActive=false;
 			if (state.tabs[i].path==state.newTab.path) {
 				state.tabs[i].isActive=true;
+				//可能存在更新名字的情况
+				state.tabs[i].name=state.newTab.name;
 				isHasOpened=true;
 			}
 		}

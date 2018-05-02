@@ -56,11 +56,13 @@ export default {
 	        },
 	        {
 	          path: 'archives/shipArchives/:shipId',
-	          component: shipArchives
+	          component: shipArchives,
+	          meta: { pageId: "shipArchives" }
 	        },
 	        {
 	          path: 'archives/personArchives/:personId',
-	          component: personArchives
+	          component: personArchives,
+	          meta: { pageId: "personArchives" }
 	        },
 	        {
 	          path: 'archives/shipRelated/historyTrack/:shipId',
