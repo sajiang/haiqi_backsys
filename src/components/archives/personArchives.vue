@@ -1,7 +1,7 @@
 <template>
 <div id="companyArchives" class="wraper">
     <div class="clearfix grey8C">
-      <span>首页>海南和宇运贸有限公司>小张</span>
+      <span>{{baseInfo.data.UserName}}的个人档案</span>
       <s-reload-btn class="fr"></s-reload-btn>
     </div>
     <div class="clearfix mgt20">
@@ -48,7 +48,7 @@
             <td :class="baseInfo.data.AuthSoureList&&baseInfo.data.AuthSoureList.length>0?'green':''">
               <s-upload-img v-if="baseInfo.isEdit" @fileUpload="saveImgFileData" ref="imgPlugin" class="inputArea"></s-upload-img>
               <span v-else>
-                <s-delete-img :img-list.sync="baseInfo.data.AuthSoureList" :soure-type="3" :soure-id='$route.params.shipId'>
+                <s-delete-img :img-list.sync="baseInfo.data.AuthSoureList" :soure-type="3" :soure-id='$route.params.personId'>
                   {{baseInfo.data.AuthSoureList&&baseInfo.data.AuthSoureList.length>0?"已认证":"未认证"}}
                   <i v-if="baseInfo.data.AuthSoureList&&baseInfo.data.AuthSoureList.length>0" class="fr el-icon-success"></i>
                 </s-delete-img>
@@ -187,7 +187,7 @@
     <div class="relatedCompany mgt20">
       <div class="tableName">
         <span>关联公司</span>
-        <i class="fr mgr10 fa fa-plus"></i>
+        <i class="fr mgr10 fa fa-plus" @click="companyMapDialogVisible=true"></i>
       </div>
       <table class="el-table el-table--fit el-table--border el-table--enable-row-hover" border="0" cellpadding="0" cellspacing="0">
         <thead  class="grey8C">
@@ -199,17 +199,22 @@
           <th>操作</th>
         </thead>
         <tbody>
-          <tr class="bold">
-            <td>天津海旗船务有限公司</td>
-            <td>综合</td>
-            <td>洋浦-上海、八所-南通</td>
-            <td class="green">已认证<i class="fr el-icon-success"></i></td>
+          <tr class="bold" v-for="(item,index) in relatedCompany.data" @click="toCompanyArchives(item)">
+            <td>{{item.CompanyName}}</td>
+            <td>{{item.CompanyType}}</td>
+            <td>{{item.FlowDrection}}</td>
             <td>
-              <span>运营权</span>
-              <i class="mgr10 fr fa fa-save"></i>
-              <i class="mgr10 fr fa fa-edit"></i>
+              <span  class="green" v-if="item.AuthSoureList&&item.AuthSoureList.length>0">已认证<i class="fr el-icon-success"></i>
+              </span>
+              <span v-else>未认证</span>
             </td>
-            <td class="center"><i class="mgr10 fa fa-trash-o"></i></td>
+            <td @click.stop="">
+              <el-input size="mini" v-if="item.isEdit" class="noBorderInput smallInput" type="text" v-model="relatedCompany.edit[index].Relate"></el-input>
+              <span v-else>{{item.Relate}}</span>
+              <i v-if="item.isEdit" @click="saveCompanyRelated(item,index)" class="mgr10 fr fa fa-save"></i>
+              <i v-else @click="editCompanyRelated(item)" class="mgr10 fr fa fa-edit"></i>
+            </td>
+            <td class="center" @click.stop="removeRelated(item.RelateId,index,'relatedCompany')"><i class="mgr10 fa fa-trash-o"></i></td>
           </tr>
         </tbody>
       </table>
@@ -253,6 +258,17 @@
         </tbody>
       </table>
     </div>
+    <el-dialog
+      title="关联公司"
+      :visible.sync="companyMapDialogVisible"
+      width="300px">
+      <el-autocomplete
+        v-model="companyNameKeyword"
+        :fetch-suggestions="queryCompanyNameAsync"
+        placeholder="请输入内容"
+        @select="handleCompanyNameSelect"
+      ></el-autocomplete>
+    </el-dialog>
     <el-dialog
       title="关联船舶"
       :visible.sync="shipMapDialogVisible"
@@ -298,6 +314,12 @@ export default {
         edit:[],
         data:[],
       },
+      companyMapDialogVisible:false,
+      companyNameKeyword:"",
+      relatedCompany:{
+        edit:[],
+        data:[],
+      },
       shipMapDialogVisible:false,
       shipNameKeyword:"",
       relatedShips:{
@@ -317,7 +339,7 @@ export default {
   methods:{
     onRouterChange(toR,fromR){
       if (toR.meta.pageId=="personArchives"&&fromR.meta.pageId=="personArchives") {
-        //当前页面是公司档案A 跳转公司档案B(companyId变化)
+        //当前页面是个人档案A 跳转个人档案B(personId变化)
         this.searchPerson();
       }
     },
@@ -349,6 +371,12 @@ export default {
           }
           this.bankAccountInfo.edit=JSON.parse(JSON.stringify(bankAccountInfo));
           this.bankAccountInfo.data=JSON.parse(JSON.stringify(bankAccountInfo));
+          let relatedCompany=retData.BeContactCompanys;
+          for (var i = relatedCompany.length - 1; i >= 0; i--) {
+            relatedCompany[i].isEdit=false;
+          }
+          this.relatedCompany.edit=JSON.parse(JSON.stringify(relatedCompany));
+          this.relatedCompany.data=JSON.parse(JSON.stringify(relatedCompany));
           let relatedShips=retData.BeContactShips;
           for (var i = relatedShips.length - 1; i >= 0; i--) {
             relatedShips[i].isEdit=false;
@@ -359,6 +387,11 @@ export default {
           this.$message({
             message: response.data.RetMsg,
             type: 'error'
+          });
+          this.$store.tabs.commit('assignNewTab', {
+            path:this.$route.path,
+            name:response.data.RetMsg,
+            isActive:true
           });
         }
       })
@@ -380,15 +413,16 @@ export default {
       if (this.baseInfo.imgObjs.length==0) {
         param.append('file',"");
       }
+      param.append("CompanyStaffId",this.baseInfo.data.Id);
       this.$axios({
         method: 'post',
-        url: this.$store.commonData.state.url+'Customer/EditShip',
+        url: this.$store.commonData.state.url+'Customer/EditCompanyStaff',
         headers:{'Content-Type':'multipart/form-data'} ,
         data: param,
         
       }).then((response)=>{
         if (response.data.RetCode==0) {
-          this.searchCompany();
+          this.searchPerson();
         }else{
           this.$message({
             message: response.data.RetMsg,
@@ -416,7 +450,7 @@ export default {
       if (!item.Id) {
         //新建
         this.$axios.post(this.$store.commonData.state.url+"Customer/AddBankAccount",{
-          RelateId:this.$route.params.shipId,
+          RelateId:this.$route.params.personId,
           RelateType:2,//人
           AccountName:this.bankAccountInfo.edit[index].AccountName,
           AccountNum:this.bankAccountInfo.edit[index].AccountNum,
@@ -488,6 +522,77 @@ export default {
         this.bankAccountInfo.edit.splice(index,1)
       }
     },
+    queryCompanyNameAsync(queryString, cb){
+      this.$axios.post(this.$store.commonData.state.url+"Customer/MapCompanyName",
+        {CompanyName:queryString})
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let queryList=[];
+          for (var i = response.data.RetData.length - 1; i >= 0; i--) {
+            queryList.push({
+              value:response.data.RetData[i].CompanyName,
+              id:response.data.RetData[i].Id,
+            });
+          }
+          cb(queryList);
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    handleCompanyNameSelect(item){
+      this.companyMapDialogVisible=false;
+      this.$axios.post(this.$store.commonData.state.url+"Customer/CompanyBeContact",
+        { CompanyBaseInfoId:item.id,
+          RelateId:this.$route.params.personId,
+          RelateType:2, //1是船 2是人
+        })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let data=response.data.RetData;
+          data.isEdit=false;
+          this.relatedCompany.edit.unshift(JSON.parse(JSON.stringify(data)));
+          this.relatedCompany.data.unshift(JSON.parse(JSON.stringify(data)));
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    editCompanyRelated(item){
+      item.isEdit=true;
+    },
+    saveCompanyRelated(item,index){
+      this.$axios.post(this.$store.commonData.state.url+"Customer/EditContact",{
+          RelateId:this.relatedCompany.edit[index].RelateId,
+          Relate:this.relatedCompany.edit[index].Relate
+        })
+        .then( (response)=>{
+          if (response.data.RetCode==0) {
+            this.relatedCompany.data[index].isEdit=false;
+            this.relatedCompany.data[index].Relate=this.relatedCompany.edit[index].Relate;
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     queryShipNameAsync(queryString, cb){
       this.$axios.post(this.$store.commonData.state.url+"Customer/MapShipName",
         {ShipName:queryString})
@@ -516,8 +621,8 @@ export default {
       this.shipMapDialogVisible=false;
       this.$axios.post(this.$store.commonData.state.url+"Customer/ShipBeContact",
         {ShipId:item.id,
-          MainId:this.$route.params.companyId,
-          MainType:1,
+          MainId:this.$route.params.personId,
+          MainType:2,
         })
       .then( (response)=>{
         if (response.data.RetCode==0) {
@@ -559,29 +664,48 @@ export default {
           console.log(error);
         });
     },
-    toPersonArchives(){
-      let personId=456;
-      this.$router.push({ path: `/main/archives/personArchives/${personId}` })
+    removeRelated(relateId,index,segment){
+      this.$axios.post(this.$store.commonData.state.url+"Customer/RmoveContact",{
+        RelateId:relateId
+      })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          this[segment].data.splice(index,1);
+          this[segment].edit.splice(index,1);
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     },
-    toShipArchives(){
-      let shipId=123;
+    toCompanyArchives(item){
+      let companyId=item.Id;
+      this.$router.push({ path: `/main/archives/companyArchives/${companyId}` })
+    },
+    toShipArchives(item){
+      let shipId=item.Id;
       this.$router.push({ path: `/main/archives/shipArchives/${shipId}` })
     },
     toPersonReturnVisit(){
-      let personId=416;
+      let personId=this.$route.params.personId;
       this.$router.push({ path: `/main/archives/personRelated/returnVisit/${personId}` })
     },
     toPersonGoodsAndShipRecord(){
-      let personId=416;
+      let personId=this.$route.params.personId;
       this.$router.push({ path: `/main/archives/personRelated/goodsAndShipRecord/${personId}` })
     },
     toPersonFollowGoodser(){
-      let personId=416;
-      this.$router.push({ path: `/main/archives/personRelated/followGoodser/${personId}` })
+      let phoneNumber=this.baseInfo.data.TelPhone;
+      this.$router.push({ path: `/main/archives/personRelated/followGoodser/${phoneNumber}` })
     },
     toPersonFollowShip(){
-      let personId=416;
-      this.$router.push({ path: `/main/archives/personRelated/followShip/${personId}` })
+      let phoneNumber=this.baseInfo.data.TelPhone;
+      this.$router.push({ path: `/main/archives/personRelated/followShip/${phoneNumber}` })
     }
   }
 }

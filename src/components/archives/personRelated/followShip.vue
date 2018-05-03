@@ -13,14 +13,23 @@
           <th>服务号最近推送时间</th>
         </thead>
         <tbody >
-          <tr v-for="i in 9">
-            <td>2018-04-06 08:11</td>
-            <td>海旗</td>
-            <td>260</td>
-            <td>2018-04-06 08:55</td>
+          <tr v-for="item in followShipArr">
+            <td>{{item.AddTime}}</td>
+            <td>{{item.ShipName}}</td>
+            <td>{{item.PushCount}}</td>
+            <td>{{item.LastPushTime}}</td>
           </tr>
         </tbody>
       </table>
+      <div class="pager" v-show='totalCount/pageSize>1'>
+        <el-pagination
+          :current-page="currentPage"
+          @current-change="getNewPage"
+          layout="prev, pager, next"
+          :page-size='pageSize'
+          :total="totalCount">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +44,7 @@ export default {
   created(){
   },
   activated(){
+    this.getReturnVisiteList(1);
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"关注船舶",
@@ -43,10 +53,55 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      followShipArr:[],
+      currentPage:1,
+      pageSize:10,
+      totalCount:0,
     }
   },
+  watch:{
+    '$route':"onRouterChange"
+  },
   methods:{
+    onRouterChange(toR,fromR){
+      if (toR.meta.pageId=="followShip"&&fromR.meta.pageId=="followShip") {
+        this.getReturnVisiteList(1);
+        this.$store.tabs.commit('assignNewTab', {
+          path:this.$route.path,
+          name:"关注船舶",
+          isActive:true
+        });
+      }
+    },
+    getReturnVisiteList(pageIndex){
+      pageIndex>0?this.currentPage=pageIndex:"";
+      this.$axios.post(this.$store.commonData.state.url+"Customer/MyShipTeamList",{
+        MobilePhone:this.$route.params.phoneNumber,
+        PageIndex:this.currentPage,
+        PageSize:this.pageSize,
+      })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let retData=response.data.RetData;
+          this.followShipArr=retData.ShipList;
+          this.totalCount=response.data.RetData.TotalRecord;
+        }else{
+          this.followShipArr=[];
+          this.totalCount=0;
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    getNewPage(e){
+      this.currentPage=e;
+      this.getReturnVisiteList();
+    }
   }
 }
 </script>

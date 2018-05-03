@@ -65,28 +65,34 @@ export default {
 	          meta: { pageId: "personArchives" }
 	        },
 	        {
-	          path: 'archives/shipRelated/historyTrack/:shipId',
-	          component: resolve => require(['@/components/archives/shipRelated/historyTrack'], resolve)
+	          path: 'archives/shipRelated/historyTrack/:shipName',
+	          component: resolve => require(['@/components/archives/shipRelated/historyTrack'], resolve),
+	          meta: { pageId: "historyTrack" }
 	        },
 	        {
-	          path: 'archives/shipRelated/subscriber/:shipId',
-	          component: resolve => require(['@/components/archives/shipRelated/subscriber'], resolve)
+	          path: 'archives/shipRelated/subscriber/:shipName',
+	          component: resolve => require(['@/components/archives/shipRelated/subscriber'], resolve),
+	          meta: { pageId: "subscriber" }
 	        },
 	        {
 	          path: 'archives/personRelated/returnVisit/:personId',
-	          component: resolve => require(['@/components/archives/personRelated/returnVisit'], resolve)
+	          component: resolve => require(['@/components/archives/personRelated/returnVisit'], resolve),
+	           meta: { pageId: "returnVisit" }
 	        },
 	        {
 	          path: 'archives/personRelated/goodsAndShipRecord/:personId',
-	          component: resolve => require(['@/components/archives/personRelated/goodsAndShipRecord'], resolve)
+	          component: resolve => require(['@/components/archives/personRelated/goodsAndShipRecord'], resolve),
+	          meta: { pageId: "goodsAndShipRecord" }
 	        },
 	        {
-	          path: 'archives/personRelated/followGoodser/:personId',
-	          component: resolve => require(['@/components/archives/personRelated/followGoodser'], resolve)
+	          path: 'archives/personRelated/followGoodser/:phoneNumber',
+	          component: resolve => require(['@/components/archives/personRelated/followGoodser'], resolve),
+	          meta: { pageId: "followGoodser" }
 	        },
 	        {
-	          path: 'archives/personRelated/followShip/:personId',
-	          component: resolve => require(['@/components/archives/personRelated/followShip'], resolve)
+	          path: 'archives/personRelated/followShip/:phoneNumber',
+	          component: resolve => require(['@/components/archives/personRelated/followShip'], resolve),
+	          meta: { pageId: "followShip" }
 	        },
 	        /*****档案管理结束*****/
 	        /*****用户权限管理开始*****/

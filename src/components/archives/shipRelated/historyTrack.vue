@@ -14,16 +14,26 @@
           <th>空船时间</th>
         </thead>
         <tbody >
-          <tr v-for="i in 9">
-            <td>2018-04-06 08:11</td>
-            <td>沙子</td>
-            <td>4000吨</td>
-            <td>葫芦岛</td>
-            <td>04-17</td>
+          <tr v-for="item in historyTrackArr">
+            <td>{{item.AddDate}}</td>
+            <td>{{item.GoodsTypeName}}</td>
+            <td>{{item.LoadTom}}</td>
+            <td>{{item.LoadPortName}}</td>
+            <td>{{item.LoadDate}}</td>
           </tr>
         </tbody>
       </table>
+      <div class="pager" v-show='totalCount/pageSize>1'>
+        <el-pagination
+          :current-page="currentPage"
+          @current-change="getNewPage"
+          layout="prev, pager, next"
+          :page-size='pageSize'
+          :total="totalCount">
+        </el-pagination>
+      </div>
     </div>
+
   </div>
 </template>
 
@@ -34,21 +44,65 @@ export default {
   components: {
     's-reload-btn': reloadBtn,
   },
+  data () {
+    return {
+      historyTrackArr:[],
+      currentPage:1,
+      pageSize:10,
+      totalCount:0,
+    }
+  },
   created(){
   },
   activated(){
-    this.$store.tabs.commit('assignNewTab', {
-      path:this.$route.path,
-      name:"海旗历史船期",
-      isActive:true
-    })
+    this.getHistoryTack(1);
   },
-  data () {
-    return {
-      msg: 'Welcome to Your Vue.js App'
-    }
+  watch:{
+    '$route':"onRouterChange"
   },
   methods:{
+    onRouterChange(toR,fromR){
+      if (toR.meta.pageId=="historyTrack"&&fromR.meta.pageId=="historyTrack") {
+        this.getHistoryTack(1);
+      }
+    },
+    getHistoryTack(pageIndex){
+      pageIndex>0?this.currentPage=pageIndex:"";
+      this.$axios.post(this.$store.commonData.state.url+"Customer/SreachShipList",{
+        ShipName:this.$route.params.shipName,
+        PageIndex:this.currentPage,
+        PageSize:this.pageSize,
+      })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let retData=response.data.RetData;
+          this.$store.tabs.commit('assignNewTab', {
+            path:this.$route.path,
+            name:this.$route.params.shipName+"历史船期",
+            isActive:true
+          });
+          this.historyTrackArr=retData.ShipList;
+          this.totalCount=response.data.RetData.TotalRecord;
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+          this.$store.tabs.commit('assignNewTab', {
+            path:this.$route.path,
+            name:response.data.RetMsg,
+            isActive:true
+          });
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    getNewPage(e){
+      this.currentPage=e;
+      this.getHistoryTack()
+    },
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
-<div id="companyArchives" class="wraper">
+<div id="shipArchives" class="wraper">
     <div class="clearfix grey8C">
-      <span>首页>海南和宇运贸有限公司>海旗</span>
+      <span>首页>{{baseInfo.data.ShipName}}</span>
       <s-reload-btn class="fr"></s-reload-btn>
     </div>
     <div class="clearfix mgt20">
@@ -182,7 +182,7 @@
           <th>操作</th>
         </thead>
         <tbody>
-          <tr class="bold" v-for="(item,index) in relatedCompany.data">
+          <tr class="bold" v-for="(item,index) in relatedCompany.data" @click="toCompanyArchives(item)">
             <td>{{item.CompanyName}}</td>
             <td>{{item.CompanyType}}</td>
             <td>{{item.FlowDrection}}</td>
@@ -352,6 +352,11 @@ export default {
           this.$message({
             message: response.data.RetMsg,
             type: 'error'
+          });
+          this.$store.tabs.commit('assignNewTab', {
+            path:this.$route.path,
+            name:response.data.RetMsg,
+            isActive:true
           });
         }
       })
@@ -551,17 +556,21 @@ export default {
         console.log(error);
       });
     },
+    toCompanyArchives(item){
+      let companyId=item.Id;
+      this.$router.push({ path: `/main/archives/companyArchives/${companyId}` })
+    },
     toPersonArchives(item){
       let personId=item.Id;
       this.$router.push({ path: `/main/archives/personArchives/${personId}` })
     },
     toShipHistoryTrack(){
-      let shipId=8033;
-      this.$router.push({ path: `/main/archives/shipRelated/historyTrack/${shipId}` })
+      let shipName=this.baseInfo.data.ShipName;
+      this.$router.push({ path: `/main/archives/shipRelated/historyTrack/${shipName}` })
     },
     toShipSubscriber(){
-      let shipId=8033;
-      this.$router.push({ path: `/main/archives/shipRelated/subscriber/${shipId}` })
+      let shipName=this.baseInfo.data.ShipName;
+      this.$router.push({ path: `/main/archives/shipRelated/subscriber/${shipName}` })
     }
   }
 }

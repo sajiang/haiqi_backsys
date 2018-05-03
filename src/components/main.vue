@@ -1,6 +1,8 @@
 <template>
 <el-container class="main">
-  <el-header>Header</el-header>
+  <el-header>
+    <el-button class="fr" type="text">退出</el-button>
+  </el-header>
   <el-container>
     <el-aside style="width:initial">
       <div class="center">
@@ -17,8 +19,6 @@
             <span slot="title">查看档案</span>
           </template>
           <el-menu-item  index="/main/archives/searchArchives">搜索档案</el-menu-item>
-          
-          <el-menu-item  index="/main/archives/companyArchives/测试公司A">公司档案</el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
@@ -105,7 +105,10 @@
       },
       handleClose(key, keyPath) {
         console.log(key, keyPath);
-      }
+      },
+      toLogin(){
+        this.$router.push({ path: "/login" });
+      },
     }
   }
 </script>

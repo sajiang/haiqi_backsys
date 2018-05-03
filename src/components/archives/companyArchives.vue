@@ -425,6 +425,11 @@ export default {
             message: response.data.RetMsg,
             type: 'error'
           });
+          this.$store.tabs.commit('assignNewTab', {
+            path:this.$route.path,
+            name:response.data.RetMsg,
+            isActive:true
+          });
         }
       })
       .catch(function (error) {

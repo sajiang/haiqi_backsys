@@ -1,5 +1,5 @@
 <template>
-<div id="companyArchives" class="wraper">
+<div id="goodsAndShipRecord" class="wraper">
     <div class="clearfix grey8C">
       发布船期/货盘记录
       <s-reload-btn class="fr"></s-reload-btn>
@@ -17,16 +17,25 @@
               <th>空港时间</th>
             </thead>
             <tbody >
-              <tr v-for="i in 9">
-                <td>2018-04-06 08:11</td>
-                <td>海旗2</td>
-                <td>煤炭</td>
-                <td>400000</td>
-                <td>秦皇岛</td>
-                <td>04-16</td>
+              <tr v-for="item in shipRecordArr">
+                <td>{{item.AddDate}}</td>
+                <td>{{item.ShipName}}</td>
+                <td>{{item.GoodsTypeName}}</td>
+                <td>{{item.LoadTom}}</td>
+                <td>{{item.LoadPortName}}</td>
+                <td>{{item.LoadDate}}</td>
               </tr>
             </tbody>
           </table>
+          <div class="pager" v-show='shipTotalCount/shipPageSize>1'>
+            <el-pagination
+              :current-page="currentShipPage"
+              @current-change="getShipNewPage"
+              layout="prev, pager, next"
+              :page-size='shipPageSize'
+              :total="shipTotalCount">
+            </el-pagination>
+          </div>
         </el-tab-pane>
         <el-tab-pane label="发布货盘记录" name="Goods">
           <table class="el-table el-table--fit el-table--border el-table--enable-row-hover" border="0" cellpadding="0" cellspacing="0">
@@ -43,20 +52,29 @@
               <th>被浏览</th>
             </thead>
             <tbody >
-              <tr v-for="i in 9">
-                <td>2018-04-06 08:11</td>
-                <td>煤炭</td>
-                <td>4000</td>
-                <td>秦皇岛</td>
-                <td>广州</td>
-                <td>2018-04-16</td>
-                <td>无</td>
-                <td>公开</td>
-                <td>12次</td>
-                <td>136</td>
+              <tr v-for="item in goodsRecordArr">
+                <td>{{item.AddTime}}</td>
+                <td>{{item.GoodsTypeName}}</td>
+                <td>{{item.CargoVolume}}</td>
+                <td>{{item.StartPortName}}</td>
+                <td>{{item.EndPortName}}</td>
+                <td>{{item.LoadDate}}</td>
+                <td>{{item.Remarks}}</td>
+                <td>{{item.IsOpenText}}</td>
+                <td>{{item.ContactNum}}</td>
+                <td>{{item.ViewNum}}</td>
               </tr>
             </tbody>
           </table>
+          <div class="pager" v-show='goodsTotalCount/goodsPageSize>1'>
+            <el-pagination
+              :current-page="currentGoodsPage"
+              @current-change="getGoodsNewPage"
+              layout="prev, pager, next"
+              :page-size='goodsPageSize'
+              :total="goodsTotalCount">
+            </el-pagination>
+          </div>
         </el-tab-pane>
       </el-tabs>
       
@@ -67,26 +85,108 @@
 <script>
 import reloadBtn from '@/components/common/reload-btn'
 export default {
-  name: 'returnVisit',
+  name: 'goodsAndShipRecord',
   components: {
     's-reload-btn': reloadBtn,
   },
   created(){
   },
   activated(){
+    this.getShipRecordList(1);
+    this.getGoodsRecordList(1);
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"发布记录",
       isActive:true
-    })
+    });
   },
   data () {
     return {
-      activeName: 'ship'
+      activeName: 'ship',
+      shipRecordArr:[],
+      goodsRecordArr:[],
+      currentShipPage:1,
+      shipPageSize:10,
+      shipTotalCount:0,
+      currentGoodsPage:1,
+      goodsPageSize:10,
+      goodsTotalCount:0,
     }
+  },
+  watch:{
+    '$route':"onRouterChange"
   },
   methods:{
     handleClick(tab, event) {
+    },
+    onRouterChange(toR,fromR){
+      if (toR.meta.pageId=="goodsAndShipRecord"&&fromR.meta.pageId=="goodsAndShipRecord") {
+        this.getShipRecordList(1);
+        this.getGoodsRecordList(1);
+        this.$store.tabs.commit('assignNewTab', {
+          path:this.$route.path,
+          name:"发布记录",
+          isActive:true
+        });
+      }
+    },
+    getShipRecordList(pageIndex){
+      pageIndex>0?this.currentShipPage=pageIndex:"";
+      this.$axios.post(this.$store.commonData.state.url+"Customer/PublicShipListLog",{
+        CompanyStaffId:this.$route.params.personId,
+        PageIndex:this.currentShipPage,
+        PageSize:this.shipPageSize,
+      })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let retData=response.data.RetData;
+          this.shipRecordArr=retData.ShipList;
+          this.shipTotalCount=response.data.RetData.TotalRecord;
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+          this.shipRecordArr=[];
+          this.shipTotalCount=0;
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    getShipNewPage(e){
+      this.currentGoodsPage=e;
+      this.getShipRecordList();
+    },
+    getGoodsRecordList(pageIndex){
+      pageIndex>0?this.currentGoodsPage=pageIndex:"";
+      this.$axios.post(this.$store.commonData.state.url+"Customer/PublicGoodsLog",{
+        CompanyStaffId:this.$route.params.personId,
+        PageIndex:this.currentGoodsPage,
+        PageSize:this.goodsPageSize,
+      })
+      .then( (response)=>{
+        if (response.data.RetCode==0) {
+          let retData=response.data.RetData;
+          this.goodsRecordArr=retData.GoodsList;
+          this.goodsTotalCount=response.data.RetData.TotalRecord;
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+          this.goodsRecordArr=[];
+          this.goodsTotalCount=0;
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    getGoodsNewPage(e){
+      this.currentGoodsPage=e;
+      this.getGoodsRecordList();
     }
   }
 }
