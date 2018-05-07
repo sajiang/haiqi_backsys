@@ -20,14 +20,21 @@ export default {
   	this.getKey()
   	this.addRoute();
   },
+  computed: {
+    token(){
+      return this.$store.commonData.state.token;
+    }
+  },
+  watch: {
+      token(){
+        this.addRoute();
+      }
+  },
   methods:{
   	addRoute(){
-  		this.$router.addRoutes([{
-	      path: '/main',
-	      name:"desktop",
-	      redirect: '/main/welcome',
-	      component: main,
-	      children: [
+  		if (!sessionStorage.getItem("Token")) {return;}
+  		let allRouterArr=
+  		[
 	      	{
 				path: 'welcome',
 				component: desktop,
@@ -117,13 +124,55 @@ export default {
 	          component: resolve => require(['@/components/columnManage/columnManage'], resolve)
 	        },
 	        /*****栏目管理结束*****/
-	      ]
-	    },
-	    {
-	      path: '*',
-	      name: '404',
-	      component: unfined
-	    }])
+	    ];
+  		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
+	      .then( (response)=>{
+	        if (response.data.RetCode==0) {
+				let routerObj=[];
+				routerObj.push({
+					path: '/main',
+					name:"desktop",
+					redirect: '/main/welcome',
+					component: main,
+					children: [{
+						path: 'welcome',
+						component: desktop,
+			      	}]
+				});
+				routerObj.push({
+					path: '*',
+					name: '404',
+					component: unfined
+				});
+				let pathArr=[];
+				let retData=response.data.RetData.Children;
+				for (let i = 0; i < retData.length; i++) {
+					for(let j =0; j< retData[i].Children.length;j++){
+						console.log(retData[i].Children[j].PageUrl)
+						if (retData[i].Children[j].PageUrl.indexOf("main/")==0) {
+							for(let k=0;k<allRouterArr.length;k++){
+								if (retData[i].Children[j].PageUrl.substr(5)==allRouterArr[k].path) {
+									routerObj[0].children.push(allRouterArr[k]);
+									pathArr.push(retData[i].Children[j]);
+								}
+							}
+						}
+					}
+				}
+				this.$store.commonData.commit('updateAuthPathArr', pathArr);
+				this.$router.addRoutes(routerObj);
+				
+	        }else{
+	          this.$message({
+	            message: response.data.RetMsg,
+	            type: 'error'
+	          });
+	        }
+	      })
+	      .catch(function (error) {
+	        console.log(error);
+	      });
+  		
   	},
   	getKey(){
   		if (sessionStorage.getItem("Token")&&sessionStorage.getItem("Token")!=undefined&&sessionStorage.getItem("Token")!="undefined") {

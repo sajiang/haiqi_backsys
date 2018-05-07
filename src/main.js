@@ -12,7 +12,19 @@ Vue.use(ElementUI);
 require( './assets/common.less');
 
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
+
+axios.interceptors.response.use(function (response) {
+    // 对响应数据做点什么
+    if (response.data.RetCode==1001) {
+    	router.push({ path: "/login" })
+    }
+    return response;
+  }, function (error) {
+    // 对响应错误做点什么
+    return Promise.reject(error);
+  });
+
 Vue.prototype.$axios = axios;
 /*router.afterEach((to, from) => {
 

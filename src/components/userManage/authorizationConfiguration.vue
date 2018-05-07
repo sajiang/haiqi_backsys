@@ -1,7 +1,7 @@
 <template>
   <div class="authorizationConfiguration">
     <div class="tableName">
-      <span>银行账户</span>
+      <span>权限设置</span>
       <i class="fr mgr10 fa fa-plus" @click="showConfigurationDialog(true)"></i>
     </div>
     <table class="el-table el-table--fit el-table--border el-table--enable-row-hover" border="0" cellpadding="0" cellspacing="0">

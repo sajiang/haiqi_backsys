@@ -13,7 +13,7 @@
       </span>
       <span class="fr">
         <span>更新人：</span>
-        <span>刘xx</span>
+        <span>{{baseInfo.data.UpdatePerson}}</span>
         <span class="mgl20">更新时间</span>
         <span>{{baseInfo.data.UpdateTime}}</span>
       </span>
@@ -33,7 +33,9 @@
           <th>联系电话</th>
           <th>传真</th>
           <th>性别</th>
-          <th>中文拼音</th>
+          <th>职务</th>
+          <th >工作范围</th>
+          
         </thead>
         <tbody >
           <tr class="bold">
@@ -74,11 +76,17 @@
               <span v-else>{{baseInfo.data.Gender}}</span>
             </td>
             <td>
-              {{baseInfo.data.Spell}}
+              <el-input size="mini" v-if="baseInfo.isEdit" class="noBorderInput" type="text" v-model="baseInfo.edit.Duty"></el-input >
+              <span v-else>{{baseInfo.data.Duty}}</span>
+            </td>
+            <td>
+              <el-input size="mini" v-if="baseInfo.isEdit" class="noBorderInput" type="text" v-model="baseInfo.edit.DutyRange"></el-input >
+              <span v-else>{{baseInfo.data.DutyRange}}</span>
             </td>
           </tr>
         </tbody>
         <thead>
+          <th>中文拼音</th>
           <th colspan="2">邮箱</th>
           <th colspan="2">身份证</th>
           <th colspan="2">身份证地址</th>
@@ -86,6 +94,9 @@
         </thead>
         <tbody >
           <tr class="bold">
+            <td>
+              {{baseInfo.data.Spell}}
+            </td>
             <td colspan="2">
               <el-input size="mini" v-if="baseInfo.isEdit" class="noBorderInput" type="text" v-model="baseInfo.edit.Email"></el-input >
               <span v-else>{{baseInfo.data.Email}}</span>

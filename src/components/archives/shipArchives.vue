@@ -13,7 +13,7 @@
       </span>
       <span class="fr">
         <span>更新人：</span>
-        <span>刘xx</span>
+        <span>{{baseInfo.data.UserName}}</span>
         <span class="mgl20">更新时间</span>
         <span>{{baseInfo.data.UpdateTime}}</span>
       </span>

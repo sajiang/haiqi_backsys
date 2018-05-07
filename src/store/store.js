@@ -62,8 +62,18 @@ const tabs = new Vuex.Store({
 });
 const commonData=new Vuex.Store({
     state:{
-    	url:"http://192.168.0.230:88/api/"
-    }
+    	token:"",
+    	url:"http://192.168.0.230:88/api/",
+    	authPathArr:[],
+    },
+    mutations: {
+	  updateToken(state,newToken){
+	  	state.token = newToken;
+	  },
+	  updateAuthPathArr(state,pathArr){
+	  	state.authPathArr=pathArr;
+	  }
+	}
 })
 export default {
 	tabs,

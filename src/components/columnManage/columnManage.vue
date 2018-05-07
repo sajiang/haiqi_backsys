@@ -215,6 +215,9 @@ export default {
           this.createNewNodeData.name="";
           this.createNewNodeData.url="";
           this.createNewNodeData.api="";
+          this.createNewNodeData.actionName="";
+          this.createNewNodeData.controllerName="";
+          this.createNewNodeData.priority="";
           this.createNewNodeData.data={};
           this.createNewNodeData.node={};
         }else{

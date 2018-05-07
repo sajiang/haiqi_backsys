@@ -1,10 +1,10 @@
 <template>
 <el-container class="main">
-  <el-header>
-    <el-button class="fr" type="text">退出</el-button>
+  <el-header class="header">
+    <el-button class="fr" type="text" @click="toLogin">退出</el-button>
   </el-header>
   <el-container>
-    <el-aside style="width:initial">
+    <el-aside style="width:initial" class="leftTree">
       <div class="center">
         <el-radio-group v-model="isCollapse"  size="small">
           <el-radio-button v-if="isCollapse" :label="false">展开</el-radio-button>
@@ -13,44 +13,44 @@
       </div>
       
       <el-menu :default-active="$route.path" :router="true" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-submenu index="1">
+        <el-submenu index="1" v-if="searchArchivesPageAuth">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">查看档案</span>
           </template>
-          <el-menu-item  index="/main/archives/searchArchives">搜索档案</el-menu-item>
+          <el-menu-item v-if="searchArchivesPageAuth" index="/main/archives/searchArchives">搜索档案</el-menu-item>
         </el-submenu>
-        <el-submenu index="2">
+        <el-submenu index="2" v-if="createNewCompanyArchivePageAuth||createNewShipArchivePageAuth||createNewPersonArchivePageAuth">
           <template slot="title">
             <i class="el-icon-location"></i>
             <span slot="title">新建档案</span>
           </template>
-          <el-menu-item  index="/main/archives/createNewCompanyArchive">新建公司档案</el-menu-item>
-          <el-menu-item  index="/main/archives/createNewShipArchive">新建船舶档案</el-menu-item>
-          <el-menu-item  index="/main/archives/createNewPersonArchive">新建个人档案</el-menu-item>
+          <el-menu-item v-if="createNewCompanyArchivePageAuth" index="/main/archives/createNewCompanyArchive">新建公司档案</el-menu-item>
+          <el-menu-item v-if="createNewShipArchivePageAuth" index="/main/archives/createNewShipArchive">新建船舶档案</el-menu-item>
+          <el-menu-item v-if="createNewPersonArchivePageAuth" index="/main/archives/createNewPersonArchive">新建个人档案</el-menu-item>
         </el-submenu>
-        <el-submenu index="3">
+        <el-submenu index="3" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">权限管理</span>
           </template>
-          <el-menu-item  index="/main/userManage/personnelArchitecture">人员管理</el-menu-item>
-          <el-menu-item  index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
+          <el-menu-item v-if="personnelArchitecturePageAuth" index="/main/userManage/personnelArchitecture">人员管理</el-menu-item>
+          <el-menu-item v-if="authorizationConfigurationPageAuth" index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
         </el-submenu>
 
-        <el-submenu index="4">
+        <el-submenu index="4" v-if="modifyPasswordPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">个人设置</span>
           </template>
-          <el-menu-item  index="/main/personalSetting/modifyPassword">修改密码</el-menu-item>
+          <el-menu-item v-if="modifyPasswordPageAuth" index="/main/personalSetting/modifyPassword">修改密码</el-menu-item>
         </el-submenu>
-        <el-submenu index="5">
+        <el-submenu index="5" v-if="columnManagePageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">栏目管理</span>
           </template>
-          <el-menu-item  index="/main/columnManage/columnManage">栏目划分</el-menu-item>
+          <el-menu-item v-if="columnManagePageAuth" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-aside>
@@ -86,9 +86,52 @@
     data() {
       return {
         isCollapse: false,
+        searchArchivesPageAuth:false,
+        createNewCompanyArchivePageAuth:false,
+        createNewShipArchivePageAuth:false,
+        createNewPersonArchivePageAuth:false,
+        personnelArchitecturePageAuth:false,
+        authorizationConfigurationPageAuth:false,
+        modifyPasswordPageAuth:false,
+        columnManagePageAuth:false,
       }
     },
+    watch:{
+      
+    },
+    created(){
+      this.getAuth();
+    },
     methods: {
+      getAuth(){
+        for (var i = this.$store.commonData.state.authPathArr.length - 1; i >= 0; i--) {
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/searchArchives"){
+            this.searchArchivesPageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewCompanyArchive"){
+            this.createNewCompanyArchivePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewShipArchive"){
+            this.createNewShipArchivePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewPersonArchive"){
+            this.createNewPersonArchivePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/personnelArchitecture"){
+            this.personnelArchitecturePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/authorizationConfiguration"){
+            this.authorizationConfigurationPageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/personalSetting/modifyPassword"){
+            this.modifyPasswordPageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/columnManage/columnManage"){
+            this.columnManagePageAuth=true;
+          }
+        }
+        
+      },
       handleNav(e){
         this.$router.push({ path: e.$el.dataset.path });
       },
@@ -112,7 +155,7 @@
     }
   }
 </script>
-<style type="text/css" scoped>
+<style lang="less" scoped>
   .leftNav{
     float: left;
     padding-top: 10px;
@@ -122,5 +165,39 @@
     padding-left: 10px;
     overflow: hidden;
   }
-
+  .leftTree{
+    background-color: #04233b;
+    color:#909399; 
+    padding-bottom:5000px;
+    margin-bottom:-5000px;
+  }
+  .leftTree/deep/ .el-menu{
+    background-color: #04233b;
+    border-right:none;
+  }
+  .leftTree/deep/ .el-submenu__title{
+    color:#909399 !important; 
+    &:hover {
+      background-color: #103155;
+    }
+  }
+  .leftTree/deep/ .el-menu-item.is-active{
+    color: #409EFF;
+  }
+  .leftTree/deep/ .el-menu-item{
+    background-color: #061b2e;
+    color:#909399;
+  }
+  .leftTree/deep/.el-menu-item:focus, .el-menu-item:hover {
+    outline: 0;
+    background-color: #103155;
+  }
+  .leftTree/deep/.el-radio-button:first-child:last-child .el-radio-button__inner{
+    background-color:#103155;
+    border:none;
+    color:#909399;
+  }
+  .header{
+    background: #04233b;
+  }
 </style>
