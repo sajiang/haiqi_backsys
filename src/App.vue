@@ -148,7 +148,6 @@ export default {
 				let retData=response.data.RetData.Children;
 				for (let i = 0; i < retData.length; i++) {
 					for(let j =0; j< retData[i].Children.length;j++){
-						console.log(retData[i].Children[j].PageUrl)
 						if (retData[i].Children[j].PageUrl.indexOf("main/")==0) {
 							for(let k=0;k<allRouterArr.length;k++){
 								if (retData[i].Children[j].PageUrl.substr(5)==allRouterArr[k].path) {

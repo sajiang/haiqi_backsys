@@ -206,21 +206,28 @@ export default {
       });
     },
     deleteAuth(index,item){
-      this.$axios.get(this.$store.commonData.state.url+`Rights/Delete/${item.Id}`)
-      .then( (response)=>{
-        if (response.data.RetCode==0) {
-          this.roleList.splice(index,1)
-        }else{
-          this.$message({
-            message: response.data.RetMsg,
-            type: 'error'
-          });
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.get(this.$store.commonData.state.url+`Rights/Delete/${item.Id}`)
+        .then( (response)=>{
+          if (response.data.RetCode==0) {
+            this.roleList.splice(index,1)
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      }).catch(() => {
+       //doNoting
       });
-
     },
     setCheckedKeys() {
       this.$refs.tree.setCheckedKeys([14,19]);
@@ -234,10 +241,13 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.el-tree/deep/.el-tree-node__children .el-tree-node__children .el-tree-node__children .el-tree-node{
-  display: inline-block;
-  &:not(:first-child) .el-tree-node__content{
-    padding-left: 0px !important;
+.el-tree/deep/.el-tree-node__children .el-tree-node__children .el-tree-node__children{
+  white-space:normal;
+  .el-tree-node{
+    display: inline-block;
+    &:not(:first-child) .el-tree-node__content{
+      padding-left: 0px !important;
+    }
   }
 }
 .inputWapper{

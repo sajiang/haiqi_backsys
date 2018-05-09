@@ -389,43 +389,52 @@ export default {
       });
     },
     removeDepart(node, data) {
-      if (node.level==2) {
-        this.$axios.get(this.$store.commonData.state.url+`Department/Delete/${data.Id}`)
-        .then( (response)=>{
-          if (response.data.RetCode==0) {
-            const parent = node.parent;
-            const children = parent.data.children || parent.data;
-            const index = children.findIndex(d => d.Id === data.Id);
-            children.splice(index, 1);
-          }else{
-            this.$message({
-              message: response.data.RetMsg,
-              type: 'error'
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      }else if (node.level==3) {
-        this.$axios.get(this.$store.commonData.state.url+`Position/Delete/${data.Id}`)
-        .then( (response)=>{
-          if (response.data.RetCode==0) {
-            const parent = node.parent;
-            const children = parent.data.children || parent.data;
-            const index = children.findIndex(d => d.Id === data.Id);
-            children.splice(index, 1);
-          }else{
-            this.$message({
-              message: response.data.RetMsg,
-              type: 'error'
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      }
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (node.level==2) {
+          this.$axios.get(this.$store.commonData.state.url+`Department/Delete/${data.Id}`)
+          .then( (response)=>{
+            if (response.data.RetCode==0) {
+              const parent = node.parent;
+              const children = parent.data.children || parent.data;
+              const index = children.findIndex(d => d.Id === data.Id);
+              children.splice(index, 1);
+            }else{
+              this.$message({
+                message: response.data.RetMsg,
+                type: 'error'
+              });
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }else if (node.level==3) {
+          this.$axios.get(this.$store.commonData.state.url+`Position/Delete/${data.Id}`)
+          .then( (response)=>{
+            if (response.data.RetCode==0) {
+              const parent = node.parent;
+              const children = parent.data.children || parent.data;
+              const index = children.findIndex(d => d.Id === data.Id);
+              children.splice(index, 1);
+            }else{
+              this.$message({
+                message: response.data.RetMsg,
+                type: 'error'
+              });
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }
+      }).catch(() => {
+       //doNoting
+      });
+      
     },
 
     getStaffList(node,pageIndex){
@@ -551,21 +560,29 @@ export default {
     },
     deleteStaff(item,index){
       if (item.Id>-1) {
-        this.$axios.get(this.$store.commonData.state.url+`Staff/Delete/${item.Id}`)
-        .then( (response)=>{
-          if (response.data.RetCode==0) {
-            this.staffList.splice(index,1)
-            this.staffEditingList.splice(index,1)
-            this.totalCount=this.totalCount-1;
-          }else{
-            this.$message({
-              message: response.data.RetMsg,
-              type: 'error'
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
+        this.$confirm('是否确定删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$axios.get(this.$store.commonData.state.url+`Staff/Delete/${item.Id}`)
+          .then( (response)=>{
+            if (response.data.RetCode==0) {
+              this.staffList.splice(index,1)
+              this.staffEditingList.splice(index,1)
+              this.totalCount=this.totalCount-1;
+            }else{
+              this.$message({
+                message: response.data.RetMsg,
+                type: 'error'
+              });
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }).catch(() => {
+         //doNoting
         });
       }else{
         this.staffList.splice(index,1)

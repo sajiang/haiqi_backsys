@@ -109,7 +109,7 @@
 				<el-col :span="12">
 					<div class="inputWapper">
 						<span class="labelName">净吨</span>
-						<el-input v-model="shipInfo.xxxx" class="inputArea"></el-input>
+						<el-input v-model="shipInfo.NetTon" class="inputArea"></el-input>
 					</div>
 				</el-col>
 			</el-row>
@@ -174,6 +174,7 @@ export default {
       	MaxSpeed:"",
       	Mmsi:"",
       	Length:"",
+      	NetTon:"",
       	Width:"",
       	Depth:"",
       	Capacity:"",

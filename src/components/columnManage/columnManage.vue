@@ -285,22 +285,35 @@ export default {
       });
     },
     remove(data, node) {
-      this.$axios.get(this.$store.commonData.state.url+`Column/Delete/${data.Id}`)
-      .then( (response)=>{
-        if (response.data.RetCode==0) {
-          const parent = node.parent;
-          const children = parent.data.children || parent.data;
-          const index = children.findIndex(d => d.Id === data.Id);
-          children.splice(index, 1);
-        }else{
-          this.$message({
-            message: response.data.RetMsg,
-            type: 'error'
-          });
-        }
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.get(this.$store.commonData.state.url+`Column/Delete/${data.Id}`)
+        .then( (response)=>{
+          if (response.data.RetCode==0) {
+            const parent = node.parent;
+            const children = parent.data.children || parent.data;
+            const index = children.findIndex(d => d.Id === data.Id);
+            children.splice(index, 1);
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(()=>{
+          //doNoting
       });
       
     },

@@ -118,7 +118,7 @@
 .title{
 	.center;
 	.grey8C;
-	margin-top: 200px;
+	margin-top: 100px;
 }
 .searchPanel{
 	width: 666px;

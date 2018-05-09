@@ -9,13 +9,13 @@
         <span>编号：</span>
         <span>{{baseInfo.data.FileId}}</span>
         <span class="mgl20">建档时间</span>
-        <span>{{baseInfo.data.AddTime}}</span>
+        <span>{{baseInfo.data.AddTimeStr}}</span>
       </span>
       <span class="fr">
         <span>更新人：</span>
-        <span>{{baseInfo.data.UserName}}</span>
+        <span>{{baseInfo.data.UpdatePerson}}</span>
         <span class="mgl20">更新时间</span>
-        <span>2018.04.01 09:15</span>
+        <span>{{baseInfo.data.UpdateTimeStr}}</span>
       </span>
     </div>
     <div class="baseInfo mgt20">
@@ -536,23 +536,32 @@ export default {
     },
     deleteBankAccount(item,index){
       if (item.Id>-1) {
-        this.$axios.post(this.$store.commonData.state.url+`Customer/RemoveBankAccount`,{
-          AccountId:item.Id
-        })
-        .then( (response)=>{
-          if (response.data.RetCode==0) {
-            this.bankAccountInfo.data.splice(index,1)
-            this.bankAccountInfo.edit.splice(index,1)
-          }else{
-            this.$message({
-              message: response.data.RetMsg,
-              type: 'error'
-            });
-          }
-        })
-        .catch(function (error) {
-          console.log(error);
+        this.$confirm('是否确认删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$axios.post(this.$store.commonData.state.url+`Customer/RemoveBankAccount`,{
+            AccountId:item.Id
+          })
+          .then( (response)=>{
+            if (response.data.RetCode==0) {
+              this.bankAccountInfo.data.splice(index,1)
+              this.bankAccountInfo.edit.splice(index,1)
+            }else{
+              this.$message({
+                message: response.data.RetMsg,
+                type: 'error'
+              });
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }).catch(() => {
+          //doNoting    
         });
+        
       }else{
         this.bankAccountInfo.data.splice(index,1)
         this.bankAccountInfo.edit.splice(index,1)
@@ -705,23 +714,32 @@ export default {
         });
     },
     removeRelated(relateId,index,segment){
-      this.$axios.post(this.$store.commonData.state.url+"Customer/RmoveContact",{
-        RelateId:relateId
-      })
-      .then( (response)=>{
-        if (response.data.RetCode==0) {
-          this[segment].data.splice(index,1);
-          this[segment].edit.splice(index,1);
-        }else{
-          this.$message({
-            message: response.data.RetMsg,
-            type: 'error'
-          });
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.post(this.$store.commonData.state.url+"Customer/RmoveContact",{
+          RelateId:relateId
+        })
+        .then( (response)=>{
+          if (response.data.RetCode==0) {
+            this[segment].data.splice(index,1);
+            this[segment].edit.splice(index,1);
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      }).catch(() => {
+       //doNoting
       });
+      
     },
     toPersonArchives(item){
       let personId=item.Id;
