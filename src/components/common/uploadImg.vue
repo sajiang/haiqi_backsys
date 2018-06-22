@@ -8,7 +8,7 @@
     <el-dialog
       title="上传图片"
       :visible.sync="dialogVisible"
-      width="700px">
+      width="700px" append-to-body>
       <div></div>
       <el-row :gutter="30">
         <el-col class="imgPreview" :span="6" v-for="(imgObj,index) in imgObjs" :key="imgObj.id">
@@ -68,7 +68,17 @@ export default {
       }
     },
     deleteImg(index){
-      this.imgObjs.splice(index,1)
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.imgObjs.splice(index,1)
+      })
+      .catch(()=>{
+          //doNoting
+      });
+      
     },
     clearImg(){
       this.imgObjs=[];

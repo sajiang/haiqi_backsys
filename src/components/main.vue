@@ -52,6 +52,14 @@
           </template>
           <el-menu-item v-if="columnManagePageAuth" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
         </el-submenu>
+        <el-submenu index="6" v-if="adConfigurationAuth||freightAuth">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+            <span slot="title">功能操作</span>
+          </template>
+          <el-menu-item v-if="adConfigurationAuth" index="/main/adConfiguration/adConfiguration">广告配置</el-menu-item>
+          <el-menu-item v-if="freightAuth" index="/main/freight/freight">运价表</el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-aside>
     <el-main>
@@ -94,6 +102,8 @@
         authorizationConfigurationPageAuth:false,
         modifyPasswordPageAuth:false,
         columnManagePageAuth:false,
+        adConfigurationAuth:false,
+        freightAuth:false,
       }
     },
     watch:{
@@ -128,6 +138,12 @@
           }
           if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/columnManage/columnManage"){
             this.columnManagePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/adConfiguration/adConfiguration"){
+            this.adConfigurationAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/freight/freight"){
+            this.freightAuth=true;
           }
         }
         

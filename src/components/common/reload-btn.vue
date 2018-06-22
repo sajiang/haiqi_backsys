@@ -1,5 +1,5 @@
 <template>
-<i @click="reload" class="el-icon-refresh"></i>
+
 </template>
 <script>
 export default {

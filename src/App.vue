@@ -124,6 +124,28 @@ export default {
 	          component: resolve => require(['@/components/columnManage/columnManage'], resolve)
 	        },
 	        /*****栏目管理结束*****/
+	        /*****广告配置开始*****/
+	        {
+	          path: 'adConfiguration/adConfiguration',
+	          component: resolve => require(['@/components/adConfiguration/adConfiguration'], resolve)
+	        },
+	        {
+	          path: 'adConfiguration/history/:columnId',
+	          meta: { pageId: "adHistory" },
+	          component: resolve => require(['@/components/adConfiguration/history'], resolve)
+	        },
+	        /*****广告配置结束*****/
+	        /*****运价表开始*****/
+	        {
+	          path: 'freight/freight',
+	          component: resolve => require(['@/components/freight/freight'], resolve)
+	        },
+	        {
+	          path: 'freight/freightHistory/:TId',
+	          meta: { pageId: "freightHistory" },
+	          component: resolve => require(['@/components/freight/freightHistory'], resolve)
+	        },
+	        /*****运价表结束*****/
 	    ];
   		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
 	      .then( (response)=>{

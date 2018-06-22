@@ -44,24 +44,34 @@ export default {
   		this.currentImgDataUrl=item.Original;
   	},
   	deleteImg(item,index){
-  		this.$axios.post(this.$store.commonData.state.url+"Customer/RemoveImgSoure",
-        { Id:item.Id,
-          SoureType:this.soureType,
-          SoureId:this.soureId,
+      this.$confirm('是否确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.post(this.$store.commonData.state.url+"Customer/RemoveImgSoure",
+          { Id:item.Id,
+            SoureType:this.soureType,
+            SoureId:this.soureId,
+          })
+        .then( (response)=>{
+          if (response.data.RetCode==0) {
+            this.imgList.splice(index,1);
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
         })
-      .then( (response)=>{
-        if (response.data.RetCode==0) {
-          this.imgList.splice(index,1);
-        }else{
-          this.$message({
-            message: response.data.RetMsg,
-            type: 'error'
-          });
-        }
+        .catch(function (error) {
+          console.log(error);
+        });
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(()=>{
+          //doNoting
       });
+  		
   	}
   }
 }
