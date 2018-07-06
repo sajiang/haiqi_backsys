@@ -29,7 +29,16 @@
           <el-menu-item v-if="createNewShipArchivePageAuth" index="/main/archives/createNewShipArchive">新建船舶档案</el-menu-item>
           <el-menu-item v-if="createNewPersonArchivePageAuth" index="/main/archives/createNewPersonArchive">新建个人档案</el-menu-item>
         </el-submenu>
-        <el-submenu index="3" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
+        <el-submenu index="3" v-if="goodsInsuranceListPageAuth||createNewInsurancePageAuth||statementPageAuth">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+            <span slot="title">订单管理</span>
+          </template>
+          <el-menu-item v-if="goodsInsuranceListPageAuth" index="/main/insurance/goodsInsuranceList">货险订单</el-menu-item>
+          <el-menu-item v-if="createNewInsurancePageAuth" index="/main/insurance/createNewInsurance">新增保单</el-menu-item>
+          <el-menu-item v-if="statementPageAuth" index="/main/insurance/statement">对账单</el-menu-item>
+        </el-submenu>
+        <el-submenu index="4" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">权限管理</span>
@@ -38,21 +47,21 @@
           <el-menu-item v-if="authorizationConfigurationPageAuth" index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
         </el-submenu>
 
-        <el-submenu index="4" v-if="modifyPasswordPageAuth">
+        <el-submenu index="5" v-if="modifyPasswordPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">个人设置</span>
           </template>
           <el-menu-item v-if="modifyPasswordPageAuth" index="/main/personalSetting/modifyPassword">修改密码</el-menu-item>
         </el-submenu>
-        <el-submenu index="5" v-if="columnManagePageAuth">
+        <el-submenu index="6" v-if="columnManagePageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">栏目管理</span>
           </template>
           <el-menu-item v-if="columnManagePageAuth" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
         </el-submenu>
-        <el-submenu index="6" v-if="adConfigurationAuth||freightAuth">
+        <el-submenu index="7" v-if="adConfigurationAuth||freightAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">功能操作</span>
@@ -99,6 +108,9 @@
         createNewShipArchivePageAuth:false,
         createNewPersonArchivePageAuth:false,
         personnelArchitecturePageAuth:false,
+        goodsInsuranceListPageAuth:false,
+        createNewInsurancePageAuth:false,
+        statementPageAuth:false,
         authorizationConfigurationPageAuth:false,
         modifyPasswordPageAuth:false,
         columnManagePageAuth:false,
@@ -129,6 +141,15 @@
           }
           if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/personnelArchitecture"){
             this.personnelArchitecturePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/goodsInsuranceList"){
+            this.goodsInsuranceListPageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/createNewInsurance"){
+            this.createNewInsurancePageAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/statement"){
+            this.statementPageAuth=true;
           }
           if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/authorizationConfiguration"){
             this.authorizationConfigurationPageAuth=true;

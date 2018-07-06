@@ -102,6 +102,25 @@ export default {
 	          meta: { pageId: "followShip" }
 	        },
 	        /*****档案管理结束*****/
+	        /*****订单管理开始*****/
+	        {
+	          path: 'insurance/goodsInsuranceList',
+	          component: resolve => require(['@/components/insurance/goodsInsuranceList'], resolve)
+	        },
+	        {
+	          path: 'insurance/createNewInsurance',
+	          component: resolve => require(['@/components/insurance/createNewInsurance'], resolve)
+	        },
+	        {
+	          path: 'insurance/statement',
+	          component: resolve => require(['@/components/insurance/statement'], resolve)
+	        },
+	        {
+	          path: 'insurance/goodsInsuranceDetail/:goodsInsuranceId',
+	          component: resolve => require(['@/components/insurance/goodsInsuranceDetail'], resolve),
+	          meta: { pageId: "goodsInsuranceDetail" }
+	        },
+	        /*****订单管理结束*****/
 	        /*****用户权限管理开始*****/
 	        {
 	          path: 'userManage/personnelArchitecture',

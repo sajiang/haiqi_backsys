@@ -31,7 +31,8 @@
               <span>{{item.GoodType}}</span>
             </td>
             <td>
-              <span>{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-if="item.MaxPrice>item.StartPrice">{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-else>{{item.StartPrice}}</span>
             </td>
             <td>
               <span :class="item.ZF.substr(0,item.ZF.length-1)>0?'red':(item.ZF.substr(0,item.ZF.length-1)<0)?'green':''">{{item.ZF}}</span>
@@ -133,6 +134,7 @@
       :visible.sync="freightList.visible"
       width="500px">
       <div class="center priceListTitle">超级船东</div>
+      <div > <span class="fr">{{freightList.data.length>0?freightList.data[0].AddTimeStr.split(" ")[0]:''}}</span></div>
       <table class="priceList" border="0" cellpadding="0" cellspacing="0">
         <thead>
           <th>吨位</th>
@@ -153,7 +155,8 @@
               <span>{{item.CourseEnd}}</span>
             </td>
             <td>
-              <span>{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-if="item.MaxPrice>item.StartPrice">{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-else>{{item.StartPrice}}</span>
             </td>
             <td>
               <span>{{item.GoodType}}</span>
@@ -163,7 +166,7 @@
             </td>
           </tr>
           <tr class="tip">
-            <td colspan="6">以上运价仅供参考，已市场行情为准(运价单位：元/吨)</td>
+            <td colspan="6">以上运价仅供参考，以市场行情为准(运价单位：元/吨)</td>
           </tr>
         </tbody>
       </table>
@@ -286,6 +289,9 @@ export default {
           type: 'error'
         });
         return;
+      }
+      if (this.createNewColumnData.subData.MinTonnage<=0) {
+        this.createNewColumnData.subData.MinTonnage=null;
       }
       this.$axios({
         method: 'post',
