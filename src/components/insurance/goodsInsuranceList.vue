@@ -30,7 +30,7 @@
           <th>状态</th>
         </thead>
         <tbody >
-          <tr v-for="item in insuranceList">
+          <tr v-for="item in insuranceList" @click="toGoodsInsuranceDetail(item)">
             <td>{{item.ImgName}}1gfsdgd</td>
             <td>{{item.StartTimeStr}}1asdfas</td>
             <td>{{item.EndTimeStr}}2gdag</td>
@@ -106,6 +106,9 @@ export default {
         console.log(error);
       });
     },
+    toGoodsInsuranceDetail(item){
+      this.$router.push({ path: `/main/insurance/goodsInsuranceDetail/${1}` });
+    }
   }
 }
 </script>

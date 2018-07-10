@@ -2,7 +2,6 @@
 <div id="companyArchives" class="wraper">
     <div class="clearfix grey8C">
       <span>首页>{{baseInfo.data.CompanyName}}</span>
-      <s-reload-btn class="fr"></s-reload-btn>
     </div>
     <div class="clearfix mgt20">
       <span>
