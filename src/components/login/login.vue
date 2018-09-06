@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login" @keydown.enter="login">
     <div class="form">
       <div class="content">
         <div class="center title">
@@ -20,7 +20,8 @@
           </div>
         </div>
         <div class="center">
-          <el-button class="submitBtn mgt20" type="primary" @click="login">登录</el-button> 
+          <el-button class="submitBtn mgt20" type="primary" @click="login" v-loading="isLogin" element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255, 255, 255, 0.5)" customClass="fl">登录</el-button> 
         </div>
       </div>
     </div>
@@ -34,7 +35,8 @@ export default {
   data () {
     return {
       userName: '',
-      password: ''
+      password: '',
+      isLogin:false,
     }
   },
   
@@ -44,11 +46,14 @@ export default {
   },
   methods:{
   	login(){
+      if (this.isLogin) {return}
+      this.isLogin=true;
       this.$axios.post(this.$store.commonData.state.url+"Account/AdminLogin", {
         UserName:this.userName,
         Pwd:md5.hex_md5(this.password)
       })
       .then( (response)=>{
+        this.isLogin=false;
         if (response.data.RetCode==0) {
           sessionStorage.setItem("Token", response.data.RetData.Token);
           this.$axios.defaults.headers.common['Token'] = response.data.RetData.Token;
@@ -104,5 +109,9 @@ export default {
 }
 .submitBtn{
   width: 320px;
+}
+/deep/.el-loading-spinner{
+  margin-top: -7px;
+  width: 84%;
 }
 </style>

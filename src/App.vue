@@ -165,6 +165,16 @@ export default {
 	          component: resolve => require(['@/components/freight/freightHistory'], resolve)
 	        },
 	        /*****运价表结束*****/
+	        /*****船期货盘开始*****/
+	        {
+	          path: 'shipAndGoods/shipment',
+	          component: resolve => require(['@/components/shipAndGoods/shipment'], resolve)
+	        },
+	        {
+	          path: 'shipAndGoods/publicGoods',
+	          component: resolve => require(['@/components/shipAndGoods/publicGoods'], resolve)
+	        },
+	        /*****船期货盘结束*****/
 	    ];
   		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
 	      .then( (response)=>{

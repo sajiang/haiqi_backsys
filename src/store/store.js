@@ -56,14 +56,13 @@ const tabs = new Vuex.Store({
 				}
 			}
 	  	}
-	  	
 	  }
 	}
 });
 const commonData=new Vuex.Store({
     state:{
     	token:"",
-    	url:"http://192.168.0.230:99/api/",//"http://adm2.sspp.co/api/",
+    	url:"http://adm2.sspp.co/api2/api/",//'http://192.168.0.230:99/api/api/',//,//"http://localhost:58921/api/"
     	authPathArr:[],
     },
     mutations: {

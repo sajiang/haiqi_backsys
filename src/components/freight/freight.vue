@@ -21,8 +21,7 @@
         <tbody>
           <tr class="bold" :class="item.IsVaild==2?'backGrey':''" v-for="(item,index) in freightList.data">
             <td>
-              <span v-if="item.MinTonnage!=item.MaxTonnage">{{item.MinTonnage}}-{{item.MaxTonnage}}</span>
-              <span v-else>{{item.MinTonnage}}</span>
+              <span>{{item.showTon}}</span>
             </td>
             <td>
               <span>{{item.CourseStart}}-{{item.CourseEnd}}</span>
@@ -109,8 +108,8 @@
         <tbody>
           <tr class="bold" v-for="(item,index) in updatePriceData.data">
             <td>
-              <span v-if="item.MinTonnage!=item.MaxTonnage">{{item.MinTonnage}}-{{item.MaxTonnage}}</span>
-              <span v-else>{{item.MinTonnage}}</span>
+              <span v-if="item.MinTonnage!=null">{{item.MinTonnage}}-{{item.MaxTonnage}}</span>
+              <span v-else>{{item.MaxTonnage}}</span>
             </td>
             <td>
               <span>{{item.CourseStart}}-{{item.CourseEnd}}</span>
@@ -126,7 +125,8 @@
       </table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="updatePriceData.visible = false">取 消</el-button>
-        <el-button type="primary" @click="updatePriceList">确 定</el-button>
+        <el-button type="primary" v-loading="isSubmit" element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(255, 255, 255, 0.5)" customClass="fl" @click="updatePriceList">确 定</el-button>
       </span>
     </el-dialog>
      <el-dialog
@@ -155,7 +155,7 @@
               <span>{{item.CourseEnd}}</span>
             </td>
             <td>
-              <span v-if="item.MaxPrice>item.StartPrice">{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-if="item.MaxPrice>item.StartPrice&&item.StartPrice!==null">{{item.StartPrice}}-{{item.MaxPrice}}</span>
               <span v-else>{{item.StartPrice}}</span>
             </td>
             <td>
@@ -179,6 +179,7 @@ export default {
   name: 'freight',
   data () {
     return {
+      isSubmit:false,
       freightList: {
       	data:[],
         visible:false
@@ -227,7 +228,12 @@ export default {
             if(retData.list[i].MinTonnage==retData.list[i].MaxTonnage){
               retData.list[i].showTon=retData.list[i].MinTonnage;
             }else{
-              retData.list[i].showTon=retData.list[i].MinTonnage+'-'+retData.list[i].MaxTonnage;
+              if (retData.list[i].MinTonnage==null||retData.list[i].MaxTonnage==null) {
+                retData.list[i].showTon=retData.list[i].MinTonnage?retData.list[i].MinTonnage:retData.list[i].MaxTonnage;
+              }else{
+                retData.list[i].showTon=retData.list[i].MinTonnage+'-'+retData.list[i].MaxTonnage;
+              }
+              
             }
             retData.list[i].rowspan=1;
             retData.list[i].display=true;
@@ -316,12 +322,21 @@ export default {
       });
     },
     updatePriceList(){
+      if (this.isSubmit) {return}
+      this.isSubmit=true;
       var subData={};
       subData.listParms=[];
       for (var i = this.updatePriceData.data.length - 1; i >= 0; i--) {
         if (this.updatePriceData.data[i].StartPrice<=0||!this.updatePriceData.data[i].StartPrice) {
           this.$message({
             message: "最低运价为必填项",
+            type: 'error'
+          });
+          return;
+        }
+        if (!this.updatePriceData.relatedDate) {
+          this.$message({
+            message: "日期为必填项",
             type: 'error'
           });
           return;
@@ -344,19 +359,21 @@ export default {
         data: subData,
         
       }).then((response)=>{
-          if (response.data.RetCode==0) {
+        this.isSubmit=false;
+
+        if (response.data.RetCode==0) {
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'success'
+          });
+          this.updatePriceData.visible=false;
+          this.getPriceList();
+          }else{
             this.$message({
               message: response.data.RetMsg,
-              type: 'success'
+              type: 'error'
             });
-            this.updatePriceData.visible=false;
-            this.getPriceList();
-            }else{
-              this.$message({
-                message: response.data.RetMsg,
-                type: 'error'
-              });
-            }
+          }
       });
     },
     inDate(id){
@@ -430,6 +447,7 @@ export default {
   line-height:40px;
   text-align:center;
   border:1px solid #EEE;
+  font-size:16px;
   th{
     border:1px solid #EEE;
     background-color: #99B2DA;
@@ -444,6 +462,7 @@ export default {
   .tip{
     background-color: #99B2DA;
     color: white;
+    font-size:14px;
   }
 }
 </style>

@@ -1,8 +1,7 @@
 <template>
 <div id="companyArchives" class="wraper">
     <div class="clearfix grey8C">
-      广告位历史
-      
+      历史运价
     </div>
     <div>
     	<div>
@@ -26,8 +25,7 @@
         <tbody >
           <tr v-for="item in historyTrackArr">
             <td>
-              <span v-if="item.MinTonnage!=item.MaxTonnage">{{item.MinTonnage}}-{{item.MaxTonnage}}</span>
-              <span v-else>{{item.MinTonnage}}</span>
+              <span>{{item.showTon}}</span>
             </td>
             <td>
               <span>{{item.CourseStart}}-{{item.CourseEnd}}</span>
@@ -36,7 +34,8 @@
               <span>{{item.GoodType}}</span>
             </td>
             <td>
-              <span>{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-if="item.MaxPrice>item.StartPrice">{{item.StartPrice}}-{{item.MaxPrice}}</span>
+              <span v-else>{{item.StartPrice}}</span>
             </td>
             <td>
               <span :class="item.ZF.substr(0,item.ZF.length-1)>0?'red':(item.ZF.substr(0,item.ZF.length-1)<0)?'green':''">{{item.ZF}}</span>
@@ -108,10 +107,22 @@ export default {
       })
       .then( (response)=>{
         if (response.data.RetCode==0) {
+          
           let retData=response.data.RetData;
           this.baseInfo=retData;
+          for (var i = 0;i<retData.list.length;i++) {
+            if(retData.list[i].MinTonnage==retData.list[i].MaxTonnage){
+              retData.list[i].showTon=retData.list[i].MinTonnage;
+            }else{
+              if (retData.list[i].MinTonnage==null||retData.list[i].MaxTonnage==null) {
+                retData.list[i].showTon=retData.list[i].MinTonnage?retData.list[i].MinTonnage:retData.list[i].MaxTonnage;
+              }else{
+                retData.list[i].showTon=retData.list[i].MinTonnage+'-'+retData.list[i].MaxTonnage;
+              }
+            }
+          }
           this.historyTrackArr=retData.list;
-          this.totalCount=response.data.RetData.TotalRecord;
+          this.totalCount=response.data.RetData.TotalCount;
         }else{
           this.$message({
             message: response.data.RetMsg,

@@ -13,6 +13,14 @@
       </div>
       
       <el-menu :default-active="$route.path" :router="true" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+        <el-submenu index="8" v-if="shipmentAuth||publicGoodsAuth">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+            <span slot="title">船期货盘</span>
+          </template>
+          <el-menu-item v-if="shipmentAuth" index="/main/shipAndGoods/shipment">船期</el-menu-item>
+          <el-menu-item v-if="publicGoodsAuth" index="/main/shipAndGoods/publicGoods">公共货盘</el-menu-item>
+        </el-submenu>
         <el-submenu index="1" v-if="searchArchivesPageAuth">
           <template slot="title">
             <i class="el-icon-location"></i>
@@ -69,6 +77,7 @@
           <el-menu-item v-if="adConfigurationAuth" index="/main/adConfiguration/adConfiguration">广告配置</el-menu-item>
           <el-menu-item v-if="freightAuth" index="/main/freight/freight">运价表</el-menu-item>
         </el-submenu>
+        
       </el-menu>
     </el-aside>
     <el-main>
@@ -116,6 +125,8 @@
         columnManagePageAuth:false,
         adConfigurationAuth:false,
         freightAuth:false,
+        shipmentAuth:false,
+        publicGoodsAuth:false
       }
     },
     watch:{
@@ -166,6 +177,12 @@
           if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/freight/freight"){
             this.freightAuth=true;
           }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/shipAndGoods/shipment"){
+            this.shipmentAuth=true;
+          }
+          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/shipAndGoods/publicGoods"){
+            this.publicGoodsAuth=true;
+          }
         }
         
       },
@@ -181,10 +198,8 @@
         });
       },
       handleOpen(key, keyPath) {
-        console.log(key, keyPath);
       },
       handleClose(key, keyPath) {
-        console.log(key, keyPath);
       },
       toLogin(){
         this.$router.push({ path: "/login" });
@@ -203,13 +218,12 @@
     overflow: hidden;
   }
   .leftTree{
-    background-color: #04233b;
+    background-color: #0E4268;
     color:#909399; 
-    padding-bottom:5000px;
-    margin-bottom:-5000px;
+    height: 96vh
   }
   .leftTree/deep/ .el-menu{
-    background-color: #04233b;
+    background-color: #0E4268;
     border-right:none;
   }
   .leftTree/deep/ .el-submenu__title{
@@ -235,6 +249,10 @@
     color:#909399;
   }
   .header{
-    background: #04233b;
+    background: #0E4268; 
+    height: 4vh !important;
+  }
+  /deep/ .el-main{
+    position: relative;
   }
 </style>
