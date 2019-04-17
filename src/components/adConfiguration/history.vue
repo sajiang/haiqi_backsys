@@ -37,7 +37,7 @@
             <td>{{item.EndTimeStr}}</td>
             <td>{{item.Remark}}</td>
             <td>{{item.SkipUrl}}</td>
-            <td>{{item.Hz==1?'每次都出现':(item.Hz==2?'每天出现一次':'只出现一次')}}</td>
+            <td>{{item.Hz==1?'每天出现一次':(item.Hz==2?'每次都出现':'只出现一次')}}</td>
             <td>{{item.HzDuration}}</td>
             <td>{{item.AddTimeStr}}</td>
             <td>{{item.AdminName}}</td>

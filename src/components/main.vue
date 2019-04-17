@@ -40,13 +40,22 @@
         <el-submenu index="3" v-if="goodsInsuranceListPageAuth||createNewInsurancePageAuth||statementPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
-            <span slot="title">订单管理</span>
+            <span slot="title">保险订单</span>
           </template>
           <el-menu-item v-if="goodsInsuranceListPageAuth" index="/main/insurance/goodsInsuranceList">货险订单</el-menu-item>
           <el-menu-item v-if="createNewInsurancePageAuth" index="/main/insurance/createNewInsurance">新增保单</el-menu-item>
           <el-menu-item v-if="statementPageAuth" index="/main/insurance/statement">对账单</el-menu-item>
         </el-submenu>
-        <el-submenu index="4" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
+        <el-submenu index="4" v-if="createNewOrderPageAuth||vipOrderListPageAuth||orderFinancialControllerManagePageAuth">
+          <template slot="title">
+            <i class="el-icon-setting"></i>
+            <span slot="title">订单管理</span>
+          </template>
+          <el-menu-item v-if="createNewOrderPageAuth" index="/main/order/createNewOrder">新建订单</el-menu-item>
+          <el-menu-item v-if="vipOrderListPageAuth" index="/main/order/vipOrderList">vip撮合订单</el-menu-item>
+          <el-menu-item v-if="orderFinancialControllerManagePageAuth" index="/main/order/orderFinancialControllerManage">订单财务管理</el-menu-item>
+        </el-submenu>
+        <el-submenu index="5" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">权限管理</span>
@@ -55,21 +64,21 @@
           <el-menu-item v-if="authorizationConfigurationPageAuth" index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
         </el-submenu>
 
-        <el-submenu index="5" v-if="modifyPasswordPageAuth">
+        <el-submenu index="6" v-if="modifyPasswordPageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">个人设置</span>
           </template>
           <el-menu-item v-if="modifyPasswordPageAuth" index="/main/personalSetting/modifyPassword">修改密码</el-menu-item>
         </el-submenu>
-        <el-submenu index="6" v-if="columnManagePageAuth">
+        <el-submenu index="7" v-if="columnManagePageAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">栏目管理</span>
           </template>
           <el-menu-item v-if="columnManagePageAuth" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
         </el-submenu>
-        <el-submenu index="7" v-if="adConfigurationAuth||freightAuth">
+        <el-submenu index="9" v-if="adConfigurationAuth||freightAuth">
           <template slot="title">
             <i class="el-icon-setting"></i>
             <span slot="title">功能操作</span>
@@ -126,7 +135,10 @@
         adConfigurationAuth:false,
         freightAuth:false,
         shipmentAuth:false,
-        publicGoodsAuth:false
+        publicGoodsAuth:false,
+        createNewOrderPageAuth:false,
+        vipOrderListPageAuth:false,
+        orderFinancialControllerManagePageAuth:false,
       }
     },
     watch:{
@@ -138,50 +150,61 @@
     methods: {
       getAuth(){
         for (var i = this.$store.commonData.state.authPathArr.length - 1; i >= 0; i--) {
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/searchArchives"){
-            this.searchArchivesPageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewCompanyArchive"){
-            this.createNewCompanyArchivePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewShipArchive"){
-            this.createNewShipArchivePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/archives/createNewPersonArchive"){
-            this.createNewPersonArchivePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/personnelArchitecture"){
-            this.personnelArchitecturePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/goodsInsuranceList"){
-            this.goodsInsuranceListPageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/createNewInsurance"){
-            this.createNewInsurancePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/insurance/statement"){
-            this.statementPageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/userManage/authorizationConfiguration"){
-            this.authorizationConfigurationPageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/personalSetting/modifyPassword"){
-            this.modifyPasswordPageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/columnManage/columnManage"){
-            this.columnManagePageAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/adConfiguration/adConfiguration"){
-            this.adConfigurationAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/freight/freight"){
-            this.freightAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/shipAndGoods/shipment"){
-            this.shipmentAuth=true;
-          }
-          if(this.$store.commonData.state.authPathArr[i].PageUrl=="main/shipAndGoods/publicGoods"){
-            this.publicGoodsAuth=true;
+          switch (this.$store.commonData.state.authPathArr[i].PageUrl){
+            case "main/archives/searchArchives":
+              this.searchArchivesPageAuth=true;
+              break;
+            case "main/archives/createNewCompanyArchive":
+              this.createNewCompanyArchivePageAuth=true;
+              break;
+            case "main/archives/createNewShipArchive":
+              this.createNewShipArchivePageAuth=true;
+              break;
+            case "main/archives/createNewPersonArchive":
+              this.createNewPersonArchivePageAuth=true;
+              break;
+            case "main/userManage/personnelArchitecture":
+              this.personnelArchitecturePageAuth=true;
+              break;
+            case "main/userManage/authorizationConfiguration":
+              this.authorizationConfigurationPageAuth=true;
+              break;
+            case "main/insurance/goodsInsuranceList":
+              this.goodsInsuranceListPageAuth=true;
+              break;
+            case "main/insurance/createNewInsurance":
+              this.createNewInsurancePageAuth=true;
+              break;
+            case "main/insurance/statement":
+              this.statementPageAuth=true;
+              break;
+            case "main/personalSetting/modifyPassword":
+              this.modifyPasswordPageAuth=true;
+              break;
+            case "main/columnManage/columnManage":
+              this.columnManagePageAuth=true;
+              break;
+            case "main/adConfiguration/adConfiguration":
+              this.adConfigurationAuth=true;
+              break;
+            case "main/freight/freight":
+              this.freightAuth=true;
+              break;
+            case "main/shipAndGoods/shipment":
+              this.shipmentAuth=true;
+              break;
+            case "main/shipAndGoods/publicGoods":
+              this.publicGoodsAuth=true;
+              break;
+            case "main/order/createNewOrder":
+              this.createNewOrderPageAuth=true;
+              break;
+            case "main/order/vipOrderList":
+              this.vipOrderListPageAuth=true;
+              break;
+            case "main/order/orderFinancialControllerManage":
+              this.orderFinancialControllerManagePageAuth=true;
+              break;
           }
         }
         

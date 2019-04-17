@@ -17,6 +17,7 @@
           <th>发布时间</th>
           <th>操作人</th>
           <th>操作</th>
+          <th>展示</th>
         </thead>
         <tbody>
           <tr class="bold" :class="item.IsVaild==2?'backGrey':''" v-for="(item,index) in freightList.data">
@@ -47,6 +48,7 @@
             	<span v-if="item.IsVaild==2" class="green hand" @click="inDate(item.TId)">恢复</span>
             	<span v-else class="red hand" @click="outDate(item.TId)">失效</span>
             </td>
+            <td><el-switch :active-value="1" :inactive-value="2" v-model="item.IsCreatePic" @change="updateIsCreatePic(index)" ></el-switch></td>
           </tr>
         </tbody>
       </table>
@@ -134,7 +136,7 @@
       :visible.sync="freightList.visible"
       width="500px">
       <div class="center priceListTitle">超级船东</div>
-      <div > <span class="fr">{{freightList.data.length>0?freightList.data[0].AddTimeStr.split(" ")[0]:''}}</span></div>
+      <div > <span class="fr">{{createdPicList.length>0?createdPicList[0].AddTimeStr.split(" ")[0]:''}}</span></div>
       <table class="priceList" border="0" cellpadding="0" cellspacing="0">
         <thead>
           <th>吨位</th>
@@ -145,7 +147,7 @@
           <th>环比</th>
         </thead>
         <tbody>
-          <tr class="bold" v-for="(item,index) in freightList.data">
+          <tr class="bold" v-for="(item,index) in createdPicList" >
             <td :rowspan="item.rowspan" v-if="item.display">
               <span>{{item.showTon}}</span>
             <td>
@@ -184,6 +186,7 @@ export default {
       	data:[],
         visible:false
       },
+      createdPicList:[],
       createNewColumnData:{
         visible:false,
         subData:{},
@@ -199,7 +202,7 @@ export default {
         data:{}
       },
       currentPage:1,
-      pageSize:10,
+      pageSize:15,
       totalCount:0,
     }
   },
@@ -224,6 +227,7 @@ export default {
       .then( (response)=>{
         if (response.data.RetCode==0) {
           let retData=response.data.RetData;
+          let createdPicList=[];
           for (var i = 0;i<retData.list.length;i++) {
             if(retData.list[i].MinTonnage==retData.list[i].MaxTonnage){
               retData.list[i].showTon=retData.list[i].MinTonnage;
@@ -237,18 +241,10 @@ export default {
             }
             retData.list[i].rowspan=1;
             retData.list[i].display=true;
-          }
-          for(var i=0;i<retData.list.length-1;i++){
-            var k=1;
-            while(retData.list[i].showTon==retData.list[i+k].showTon){
-              retData.list[i].rowspan++;
-              retData.list[i+k].display=false;
-              k++;
-              if (i+k>retData.list.length-1) {break;}
-            }
-            i=i+k-1;
+            
           }
           this.freightList.data=retData.list;
+          this.generateCreatePicList();
           this.totalCount=response.data.RetData.TotalCount;
         }else{
           this.$message({
@@ -260,6 +256,29 @@ export default {
       .catch(function (error) {
         console.log(error);
       });
+    },
+    generateCreatePicList(){
+      let createdPicList=[];
+      for (var i = 0;i<this.freightList.data.length; i++) {
+        if(this.freightList.data[i].IsCreatePic==1){
+          this.freightList.data[i].rowspan=1;
+          this.freightList.data[i].display=true;
+          createdPicList.push(this.freightList.data[i]);
+        }
+      }
+      for(var i=0;i<createdPicList.length-1;i++){
+        var k=1;
+        while(createdPicList[i].showTon==createdPicList[i+k].showTon){
+          if (createdPicList[i].IsCreatePic==1) {
+            createdPicList[i].rowspan++;
+            createdPicList[i+k].display=false;
+          }
+          k++;
+          if (i+k>createdPicList.length-1) {break;}
+        }
+        i=i+k-1;
+      }
+      this.createdPicList=createdPicList;
     },
     getUpdatePriceDataList(){
       this.$axios.post(this.$store.commonData.state.url+"Customer/QueryShipFreightTempLateList",{
@@ -326,7 +345,7 @@ export default {
       this.isSubmit=true;
       var subData={};
       subData.listParms=[];
-      for (var i = this.updatePriceData.data.length - 1; i >= 0; i--) {
+      for (var i = 0;i<this.updatePriceData.data.length ;i++) {
         if (this.updatePriceData.data[i].StartPrice<=0||!this.updatePriceData.data[i].StartPrice) {
           this.$message({
             message: "最低运价为必填项",
@@ -374,6 +393,25 @@ export default {
               type: 'error'
             });
           }
+      });
+    },
+    updateIsCreatePic(index){
+      this.$axios({
+        method: 'post',
+        url: this.$store.commonData.state.url+'Customer/updateIsCreatePic',
+        data: {
+          IsCreatePic:this.freightList.data[index].IsCreatePic,
+          tempLateId:this.freightList.data[index].TId,
+        },
+        
+      }).then((response)=>{
+        if (response.data.RetCode==0) {
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'success'
+          });
+          this.generateCreatePicList();
+        }
       });
     },
     inDate(id){

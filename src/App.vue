@@ -175,6 +175,20 @@ export default {
 	          component: resolve => require(['@/components/shipAndGoods/publicGoods'], resolve)
 	        },
 	        /*****船期货盘结束*****/
+	        /*****订单管理开始*****/
+	        {
+	          path: 'order/createNewOrder',
+	          component: resolve => require(['@/components/orderManage/createNewOrder'], resolve)
+	        },
+	        {
+	          path: 'order/vipOrderList',
+	          component: resolve => require(['@/components/orderManage/vipOrderList'], resolve)
+	        },
+	        {
+	          path: 'order/orderFinancialControllerManage',
+	          component: resolve => require(['@/components/orderManage/orderFinancialControllerManage'], resolve)
+	        },
+	        /*****订单管理结束*****/
 	    ];
   		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
 	      .then( (response)=>{
