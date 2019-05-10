@@ -29,15 +29,19 @@
       }
     },
     created(){
-
-	},
-	activated(){
 		this.$store.tabs.commit('assignNewTab', {
 			path:this.$route.path,
 			name:"档案搜索",
 			isActive:true
 		})
 	},
+/*	activated(){
+		this.$store.tabs.commit('assignNewTab', {
+			path:this.$route.path,
+			name:"档案搜索",
+			isActive:true
+		})
+	},*/
     methods: {
       	querySearchAsync(queryString, cb) {
       		let url="";

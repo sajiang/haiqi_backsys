@@ -42,8 +42,6 @@ export default {
     's-reload-btn': reloadBtn,
   },
   created(){
-  },
-  activated(){
     this.getReturnVisiteList(1);
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
@@ -51,6 +49,14 @@ export default {
       isActive:true
     })
   },
+/*  activated(){
+    this.getReturnVisiteList(1);
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"关注船舶",
+      isActive:true
+    })
+  },*/
   data () {
     return {
       followShipArr:[],

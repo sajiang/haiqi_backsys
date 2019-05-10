@@ -62,15 +62,19 @@ export default {
     's-upload-img': uploadImg,
   },
   created(){
-  
-  },
-  activated(){
-    this.$store.tabs.commit('assignNewTab', {
+  	this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"新建公司档案",
       isActive:true
     });
   },
+/*  activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"新建公司档案",
+      isActive:true
+    });
+  },*/
   methods:{
   	onSubmit(e){
   		let param = new FormData(); //创建form对象  

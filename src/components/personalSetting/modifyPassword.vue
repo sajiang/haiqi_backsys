@@ -27,7 +27,7 @@ export default {
       NewPassWord: ''
     }
   },
-  activated(){
+  created(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"修改密码",

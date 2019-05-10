@@ -5,15 +5,18 @@
 @info:#909399;
 @orange:#E6A23C;
 @red:#F56C6C;
-@blue:#409EFF;
+@blue:#1b85ff;
+[v-cloak]{
+    display: none
+}
 .grey8C{
 	color: @grey8C;
 }
 .green{
-	color: @green;
+	color: @green !important;
 }
 .red{
-	color: @red;
+	color: @red !important;
 }
 .blue{
 	color: @blue;
@@ -41,7 +44,7 @@
 	color: white !important;
 }
 
-*{
+html,body{
 	margin: 0;
 	padding: 0;
 }
@@ -113,6 +116,12 @@
 .mgl20{
 	margin-left: 20px;
 }
+.font16{
+	font-size:16px;
+}
+.font14{
+	font-size:14px;
+}
 .nonVisible{
 	visibility:hidden;
 }
@@ -137,6 +146,7 @@
 	font-weight: bold;
 	font-size: 14px;
 }
+
 .el-table{
 	th{
 		font-weight: normal;
@@ -152,6 +162,10 @@
 }
 .flex{
 	display: flex;
+}
+.flexCenter{
+	display: flex;
+	align-items: center;
 }
 .flex1{
 	flex: 1;
@@ -190,6 +204,9 @@
 		line-height: 2;
 	}
 }
+.borderNone{
+	border: none
+}
 .noBorderInput{
 	width: 100%;
 	display: inline-block;
@@ -200,4 +217,34 @@
 }
 .hidden{
 	visibility: hidden;
+}
+
+
+/* 滚动条 */
+::-webkit-scrollbar-thumb:horizontal { /*水平滚动条的样式*/
+    background-color: #CCCCCC;
+    -webkit-border-radius: 4px;
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    border: 2px solid #fff;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #fff; /*滚动条的背景颜色*/
+    -webkit-border-radius: 0; /*滚动条的圆角宽度*/
+}
+::-webkit-scrollbar {
+    width: 8px; /*滚动条的宽度*/
+    height: 8px; /*滚动条的高度*/
+}
+::-webkit-scrollbar-thumb:vertical { /*垂直滚动条的样式*/
+    background-color: #CCCCCC;
+    -webkit-border-radius: 4px;
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    border: 2px solid #fff;
+}
+::-webkit-scrollbar-thumb:hover { /*滚动条的hover样式*/
+    height: 50px;
+    background-color: #9f9f9f;
+    -webkit-border-radius: 4px;
 }

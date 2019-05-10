@@ -12,7 +12,7 @@ export default {
       msg: '欢迎来到后台管理系统'
     }
   },
-  activated(){
+  created(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"欢迎",

@@ -80,8 +80,6 @@ export default {
     }
   },
   created(){
-  },
-  activated(){
     this.getHistoryTack(1);
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
@@ -89,6 +87,14 @@ export default {
       isActive:true
     });
   },
+/*  activated(){
+    this.getHistoryTack(1);
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"历史运价",
+      isActive:true
+    });
+  },*/
   watch:{
     '$route':"onRouterChange"
   },

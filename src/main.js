@@ -26,9 +26,12 @@ axios.interceptors.response.use(function (response) {
   });
 
 Vue.prototype.$axios = axios;
-/*router.afterEach((to, from) => {
-
-	
+/*router.beforeEach((to, from, next) => {
+  console.log(to)
+  debugger
+  let routeData =to.fullPath
+  next();
+  //window.open(routeData.href, '_blank');
 })*/
 /* eslint-disable no-new */
 new Vue({

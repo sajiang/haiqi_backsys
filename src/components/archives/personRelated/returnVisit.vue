@@ -74,8 +74,6 @@ export default {
     }
   },
   created(){
-  },
-  activated(){
     this.getReturnVisiteList(1);
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
@@ -83,6 +81,14 @@ export default {
       isActive:true
     });
   },
+/*  activated(){
+    this.getReturnVisiteList(1);
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"回访记录",
+      isActive:true
+    });
+  },*/
   watch:{
     '$route':"onRouterChange"
   },

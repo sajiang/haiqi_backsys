@@ -104,14 +104,19 @@ export default {
       tableData: []
     }
   },
-  activated(){
+/*  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"对账单",
       isActive:true
     });
-  },
+  },*/
   created(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"对账单",
+      isActive:true
+    });
     this.getData();
   },
   methods: {

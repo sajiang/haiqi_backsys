@@ -476,14 +476,19 @@ export default {
       		showBottom:false,
   		}
   	},
-    activated(){
+/*    activated(){
 	    this.$store.tabs.commit('assignNewTab', {
 		    path:this.$route.path,
 		    name:"VIP船期",
 		    isActive:true
 	    });
-  	},
+  	},*/
   	created(){
+  		this.$store.tabs.commit('assignNewTab', {
+		    path:this.$route.path,
+		    name:"VIP船期",
+		    isActive:true
+	    });
   		this.querySearchInfo();
   		this.getShipList();
   		this.getAllShipPosition();

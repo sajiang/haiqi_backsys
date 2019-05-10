@@ -1,96 +1,90 @@
 <template>
 <el-container class="main">
-  <el-header class="header">
-    <el-button class="fr" type="text" @click="toLogin">退出</el-button>
-  </el-header>
+  <el-aside style="width:initial" class="leftTree">
+    <div @click="isCollapse=!isCollapse" class="flag">
+      <img class="flagImg" src="../assets/img/flag.png">
+      <img v-show="!isCollapse" class="companyName" src="../assets/img/companyName.png">
+    </div>
+    <el-menu :default-active="$route.path" :router="false" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" >
+      <el-submenu index="8" v-if="shipmentAuth||publicGoodsAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">船期货盘</span>
+        </template>
+        <el-menu-item v-if="shipmentAuth" @click="handleClick" index="/main/shipAndGoods/shipment">船期</el-menu-item>
+        <el-menu-item v-if="publicGoodsAuth" @click="handleClick" index="/main/shipAndGoods/publicGoods">公共货盘</el-menu-item>
+      </el-submenu>
+      <el-submenu index="1" v-if="searchArchivesPageAuth">
+        <template slot="title">
+          <i class="el-icon-location"></i>
+          <span slot="title">查看档案</span>
+        </template>
+        <el-menu-item v-if="searchArchivesPageAuth" @click="handleClick" index="/main/archives/searchArchives">搜索档案</el-menu-item>
+      </el-submenu>
+      <el-submenu index="2" v-if="createNewCompanyArchivePageAuth||createNewShipArchivePageAuth||createNewPersonArchivePageAuth">
+        <template slot="title">
+          <i class="el-icon-location"></i>
+          <span slot="title">新建档案</span>
+        </template>
+        <el-menu-item v-if="createNewCompanyArchivePageAuth" @click="handleClick" index="/main/archives/createNewCompanyArchive">新建公司档案</el-menu-item>
+        <el-menu-item v-if="createNewShipArchivePageAuth" @click="handleClick" index="/main/archives/createNewShipArchive">新建船舶档案</el-menu-item>
+        <el-menu-item v-if="createNewPersonArchivePageAuth" @click="handleClick" index="/main/archives/createNewPersonArchive">新建个人档案</el-menu-item>
+      </el-submenu>
+      <el-submenu index="3" v-if="goodsInsuranceListPageAuth||createNewInsurancePageAuth||statementPageAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">保险订单</span>
+        </template>
+        <el-menu-item v-if="goodsInsuranceListPageAuth" @click="handleClick" index="/main/insurance/goodsInsuranceList">货险订单</el-menu-item>
+        <el-menu-item v-if="createNewInsurancePageAuth" @click="handleClick" index="/main/insurance/createNewInsurance">新增保单</el-menu-item>
+        <el-menu-item v-if="statementPageAuth" @click="handleClick" index="/main/insurance/statement">对账单</el-menu-item>
+      </el-submenu>
+      <el-submenu index="4" v-if="createNewOrderPageAuth||vipOrderListPageAuth||orderFinancialControllerManagePageAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">订单管理</span>
+        </template>
+        <el-menu-item v-if="createNewOrderPageAuth" @click="handleClick" index="/main/order/createNewOrder">新建订单</el-menu-item>
+        <el-menu-item v-if="vipOrderListPageAuth" @click="handleClick" index="/main/order/vipOrderList">vip撮合订单</el-menu-item>
+        <el-menu-item v-if="orderFinancialControllerManagePageAuth" @click="handleClick" index="/main/order/orderFinancialControllerManage">订单财务管理</el-menu-item>
+      </el-submenu>
+      <el-submenu index="5" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">权限管理</span>
+        </template>
+        <el-menu-item v-if="personnelArchitecturePageAuth" @click="handleClick" index="/main/userManage/personnelArchitecture">人员管理</el-menu-item>
+        <el-menu-item v-if="authorizationConfigurationPageAuth" @click="handleClick" index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
+      </el-submenu>
+      <el-submenu index="7" v-if="columnManagePageAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">栏目管理</span>
+        </template>
+        <el-menu-item v-if="columnManagePageAuth" @click="handleClick" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
+      </el-submenu>
+      <el-submenu index="9" v-if="adConfigurationAuth||freightAuth">
+        <template slot="title">
+          <i class="el-icon-setting"></i>
+          <span slot="title">功能操作</span>
+        </template>
+        <el-menu-item v-if="adConfigurationAuth" @click="handleClick" index="/main/adConfiguration/adConfiguration">广告配置</el-menu-item>
+        <el-menu-item v-if="freightAuth" @click="handleClick" index="/main/freight/freight">运价表</el-menu-item>
+      </el-submenu>
+    </el-menu>
+  </el-aside>
+  
   <el-container>
-    <el-aside style="width:initial" class="leftTree">
-      <div class="center">
-        <el-radio-group v-model="isCollapse"  size="small">
-          <el-radio-button v-if="isCollapse" :label="false">展开</el-radio-button>
-          <el-radio-button v-else :label="true">收起</el-radio-button>
-        </el-radio-group>
+    <el-header class="header">
+      <div class="flex1">
+        {{userName}}
       </div>
+      <el-button type="text" v-if="modifyPasswordPageAuth" @click="naviToModifyPassword" >修改密码</el-button>
+      <el-button type="text" @click="toLogin">退出</el-button>
       
-      <el-menu :default-active="$route.path" :router="true" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-submenu index="8" v-if="shipmentAuth||publicGoodsAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">船期货盘</span>
-          </template>
-          <el-menu-item v-if="shipmentAuth" index="/main/shipAndGoods/shipment">船期</el-menu-item>
-          <el-menu-item v-if="publicGoodsAuth" index="/main/shipAndGoods/publicGoods">公共货盘</el-menu-item>
-        </el-submenu>
-        <el-submenu index="1" v-if="searchArchivesPageAuth">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">查看档案</span>
-          </template>
-          <el-menu-item v-if="searchArchivesPageAuth" index="/main/archives/searchArchives">搜索档案</el-menu-item>
-        </el-submenu>
-        <el-submenu index="2" v-if="createNewCompanyArchivePageAuth||createNewShipArchivePageAuth||createNewPersonArchivePageAuth">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span slot="title">新建档案</span>
-          </template>
-          <el-menu-item v-if="createNewCompanyArchivePageAuth" index="/main/archives/createNewCompanyArchive">新建公司档案</el-menu-item>
-          <el-menu-item v-if="createNewShipArchivePageAuth" index="/main/archives/createNewShipArchive">新建船舶档案</el-menu-item>
-          <el-menu-item v-if="createNewPersonArchivePageAuth" index="/main/archives/createNewPersonArchive">新建个人档案</el-menu-item>
-        </el-submenu>
-        <el-submenu index="3" v-if="goodsInsuranceListPageAuth||createNewInsurancePageAuth||statementPageAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">保险订单</span>
-          </template>
-          <el-menu-item v-if="goodsInsuranceListPageAuth" index="/main/insurance/goodsInsuranceList">货险订单</el-menu-item>
-          <el-menu-item v-if="createNewInsurancePageAuth" index="/main/insurance/createNewInsurance">新增保单</el-menu-item>
-          <el-menu-item v-if="statementPageAuth" index="/main/insurance/statement">对账单</el-menu-item>
-        </el-submenu>
-        <el-submenu index="4" v-if="createNewOrderPageAuth||vipOrderListPageAuth||orderFinancialControllerManagePageAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">订单管理</span>
-          </template>
-          <el-menu-item v-if="createNewOrderPageAuth" index="/main/order/createNewOrder">新建订单</el-menu-item>
-          <el-menu-item v-if="vipOrderListPageAuth" index="/main/order/vipOrderList">vip撮合订单</el-menu-item>
-          <el-menu-item v-if="orderFinancialControllerManagePageAuth" index="/main/order/orderFinancialControllerManage">订单财务管理</el-menu-item>
-        </el-submenu>
-        <el-submenu index="5" v-if="personnelArchitecturePageAuth||authorizationConfigurationPageAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">权限管理</span>
-          </template>
-          <el-menu-item v-if="personnelArchitecturePageAuth" index="/main/userManage/personnelArchitecture">人员管理</el-menu-item>
-          <el-menu-item v-if="authorizationConfigurationPageAuth" index="/main/userManage/authorizationConfiguration">权限设置</el-menu-item>
-        </el-submenu>
-
-        <el-submenu index="6" v-if="modifyPasswordPageAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">个人设置</span>
-          </template>
-          <el-menu-item v-if="modifyPasswordPageAuth" index="/main/personalSetting/modifyPassword">修改密码</el-menu-item>
-        </el-submenu>
-        <el-submenu index="7" v-if="columnManagePageAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">栏目管理</span>
-          </template>
-          <el-menu-item v-if="columnManagePageAuth" index="/main/columnManage/columnManage">栏目划分</el-menu-item>
-        </el-submenu>
-        <el-submenu index="9" v-if="adConfigurationAuth||freightAuth">
-          <template slot="title">
-            <i class="el-icon-setting"></i>
-            <span slot="title">功能操作</span>
-          </template>
-          <el-menu-item v-if="adConfigurationAuth" index="/main/adConfiguration/adConfiguration">广告配置</el-menu-item>
-          <el-menu-item v-if="freightAuth" index="/main/freight/freight">运价表</el-menu-item>
-        </el-submenu>
-        
-      </el-menu>
-    </el-aside>
+    </el-header>
     <el-main>
-      <div class="el-tabs el-tabs--card el-tabs--top">
+      <!-- <div class="el-tabs el-tabs--card el-tabs--top">
         <div class="el-tabs__header is-top">
           <div class="el-tabs__nav-wrap is-top">
             <div class="el-tabs__nav-scroll">
@@ -103,10 +97,8 @@
             </div>
           </div>
         </div>
-      </div>
-      <keep-alive>
-        <router-view/>
-      </keep-alive>
+      </div> --> 
+        <router-view/> 
     </el-main>
   </el-container>
 </el-container>
@@ -117,6 +109,7 @@
   
 </template>
 <script>
+  import common from "../assets/common.js"
   export default {
     data() {
       return {
@@ -139,6 +132,7 @@
         createNewOrderPageAuth:false,
         vipOrderListPageAuth:false,
         orderFinancialControllerManagePageAuth:false,
+        userName:sessionStorage.getItem("UserName"),
       }
     },
     watch:{
@@ -209,8 +203,15 @@
         }
         
       },
-      handleNav(e){
+      /*handleNav(e){
         this.$router.push({ path: e.$el.dataset.path });
+      },*/
+      handleClick(e){
+        let routeData = this.$router.resolve({ path: e.index });
+        window.open(routeData.href, '_blank');
+      },
+      naviToModifyPassword(){
+        common.openNewPage(this,"/main/personalSetting/modifyPassword");
       },
       changePath(tab){
         this.$router.push({ path: tab.path });
@@ -243,7 +244,23 @@
   .leftTree{
     background-color: #0E4268;
     color:#909399; 
-    height: 96vh
+    height: 100vh;
+    .flag{
+      background-color:#3177BC;
+      height: 5vh;
+      display: flex;
+      align-items:center;
+      padding:0 10px;
+      .flagImg{
+        width: 49px;
+        height: 41px;
+      }
+      .companyName{
+        width: 89px;
+        height: 34px;
+        margin-left: 20px;
+      }
+    }
   }
   .leftTree/deep/ .el-menu{
     background-color: #0E4268;
@@ -272,8 +289,12 @@
     color:#909399;
   }
   .header{
-    background: #0E4268; 
-    height: 4vh !important;
+    background: white;
+    border-bottom:1px solid #eee; 
+    height: 5vh !important;
+    display: flex;
+    align-items: center;
+
   }
   /deep/ .el-main{
     position: relative;

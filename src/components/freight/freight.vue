@@ -206,14 +206,19 @@ export default {
       totalCount:0,
     }
   },
-  activated(){
+/*  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"运价表", 
       isActive:true
     });
-  },
+  },*/
   created(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"运价表", 
+      isActive:true
+    });
     this.getPriceList();
     this.getUpdatePriceDataList();
   },

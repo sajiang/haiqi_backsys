@@ -154,14 +154,19 @@ export default {
   },
   created(){
     this.getColumnData();
-  },
-  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"栏目划分",
       isActive:true
     });
   },
+/*  activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"栏目划分",
+      isActive:true
+    });
+  },*/
   methods: {
     getColumnData(){
       this.$axios.get(this.$store.commonData.state.url+"Column/Tree")

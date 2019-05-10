@@ -90,8 +90,6 @@ export default {
     's-reload-btn': reloadBtn,
   },
   created(){
-  },
-  activated(){
     this.getShipRecordList(1);
     this.getGoodsRecordList(1);
     this.$store.tabs.commit('assignNewTab', {
@@ -100,6 +98,15 @@ export default {
       isActive:true
     });
   },
+/*  activated(){
+    this.getShipRecordList(1);
+    this.getGoodsRecordList(1);
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"发布记录",
+      isActive:true
+    });
+  },*/
   data () {
     return {
       activeName: 'ship',

@@ -156,14 +156,19 @@ export default {
   },
   created(){
   	this.getConfList();
-  },
-  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"广告配置", 
       isActive:true
     });
   },
+/*  activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"广告配置", 
+      isActive:true
+    });
+  },*/
   methods:{
   	saveImgFileData(e){
   		this.imgObjs=e.imgObjs;

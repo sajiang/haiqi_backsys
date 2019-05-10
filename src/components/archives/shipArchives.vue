@@ -303,9 +303,10 @@ export default {
     }
   },
   created(){
+    this.searchShip();
   },
   activated(){
-    this.searchShip();
+    
   },
   watch:{
     '$route':"onRouterChange"

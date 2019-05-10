@@ -119,15 +119,19 @@ export default {
     }
   },
   created(){
-  
-  },
-  activated(){
-    this.$store.tabs.commit('assignNewTab', {
+  	this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"新建个人档案",
       isActive:true
     });
   },
+  /*activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"新建个人档案",
+      isActive:true
+    });
+  },*/
   methods:{
   	saveImgFileData(e){
   		this.imgObjs=e.imgObjs;

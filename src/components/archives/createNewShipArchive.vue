@@ -190,15 +190,19 @@ export default {
     }
   },
   created(){
-  
+      this.$store.tabs.commit('assignNewTab', {
+	      path:this.$route.path,
+	      name:"新建船舶档案",
+	      isActive:true
+	    });
   },
-  activated(){
+/*  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"新建船舶档案",
       isActive:true
     });
-  },
+  },*/
   methods:{
   	saveImgFileData(e){
   		this.imgObjs=e.imgObjs;

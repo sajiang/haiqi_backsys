@@ -241,14 +241,19 @@ export default {
   },
   created(){
     this.getBaseData();
-  },
-  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"新增保单",
       isActive:true
     });
   },
+/*  activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"新增保单",
+      isActive:true
+    });
+  },*/
   methods:{
     goodsTypeChange(e){
       for (var i = this.baseData.BaseGoodsTypeList.length - 1; i >= 0; i--) {

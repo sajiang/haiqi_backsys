@@ -370,13 +370,13 @@ export default {
     }
   },
   created(){
-    
+    this.searchCompany();
   },
   watch:{
     '$route':"onRouterChange"
   },
   activated(){
-    this.searchCompany();
+    
   },
   methods:{
     onRouterChange(toR,fromR){

@@ -33,6 +33,29 @@ export default {
   methods:{
   	addRoute(){
   		if (!sessionStorage.getItem("Token")) {return;}
+  		if (sessionStorage.getItem("routerData")&&JSON.parse(sessionStorage.getItem("routerData")).routerData.length>0){
+
+  			this.dealRoute(JSON.parse(sessionStorage.getItem("routerData")).routerData)
+  			return;
+  		}	
+  		
+  		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
+	      .then( (response)=>{
+	        if (response.data.RetCode==0) {
+				this.dealRoute(response.data.RetData.Children)
+	        }else{
+	          this.$message({
+	            message: response.data.RetMsg,
+	            type: 'error'
+	          });
+	        }
+	      })
+	      .catch(function (error) {
+	        console.log(error);
+	      });
+  		
+  	},
+  	dealRoute(routerData){
   		let allRouterArr=
   		[
 	      	{
@@ -181,6 +204,10 @@ export default {
 	          component: resolve => require(['@/components/orderManage/createNewOrder'], resolve)
 	        },
 	        {
+	          path: 'order/createNewOrder/:id',
+	          component: resolve => require(['@/components/orderManage/createNewOrder'], resolve)
+	        },
+	        {
 	          path: 'order/vipOrderList',
 	          component: resolve => require(['@/components/orderManage/vipOrderList'], resolve)
 	        },
@@ -190,53 +217,40 @@ export default {
 	        },
 	        /*****订单管理结束*****/
 	    ];
-  		this.$axios.get(this.$store.commonData.state.url+`Column/FindColumnsByToken?Token=${sessionStorage.getItem("Token")}`)
-	      .then( (response)=>{
-	        if (response.data.RetCode==0) {
-				let routerObj=[];
-				routerObj.push({
-					path: '/main',
-					name:"desktop",
-					redirect: '/main/welcome',
-					component: main,
-					children: [{
-						path: 'welcome',
-						component: desktop,
-			      	}]
-				});
-				routerObj.push({
-					path: '*',
-					name: '404',
-					component: unfined
-				});
-				let pathArr=[];
-				let retData=response.data.RetData.Children;
-				for (let i = 0; i < retData.length; i++) {
-					for(let j =0; j< retData[i].Children.length;j++){
-						if (retData[i].Children[j].PageUrl.indexOf("main/")==0) {
-							for(let k=0;k<allRouterArr.length;k++){
-								if (retData[i].Children[j].PageUrl.substr(5)==allRouterArr[k].path) {
-									routerObj[0].children.push(allRouterArr[k]);
-									pathArr.push(retData[i].Children[j]);
-								}
-							}
+  		let routerObj=[];
+		routerObj.push({
+			path: '/main',
+			name:"desktop",
+			redirect: '/main/welcome',
+			component: main,
+			children: [{
+				path: 'welcome',
+				component: desktop,
+	      	}]
+		});
+		routerObj.push({
+			path: '*',
+			name: '404',
+			component: unfined
+		});
+		let pathArr=[];
+		for (let i = 0; i < routerData.length; i++) {
+			for(let j =0; j< routerData[i].Children.length;j++){
+				if (routerData[i].Children[j].PageUrl.indexOf("main/")==0) {
+					for(let k=0;k<allRouterArr.length;k++){
+						if (routerData[i].Children[j].PageUrl.substr(5)==allRouterArr[k].path) {
+							routerObj[0].children.push(allRouterArr[k]);
+							pathArr.push(routerData[i].Children[j]);
 						}
 					}
 				}
-				this.$store.commonData.commit('updateAuthPathArr', pathArr);
-				this.$router.addRoutes(routerObj);
-				
-	        }else{
-	          this.$message({
-	            message: response.data.RetMsg,
-	            type: 'error'
-	          });
-	        }
-	      })
-	      .catch(function (error) {
-	        console.log(error);
-	      });
-  		
+			}
+		}
+		
+		sessionStorage.setItem("routerData", JSON.stringify({routerData:routerData}));
+		this.$router.addRoutes(routerObj);
+		sessionStorage.setItem("pathArr", JSON.stringify({pathArr:pathArr}));
+		this.$store.commonData.commit('updateAuthPathArr', pathArr);
   	},
   	getKey(){
   		if (sessionStorage.getItem("Token")&&sessionStorage.getItem("Token")!=undefined&&sessionStorage.getItem("Token")!="undefined") {

@@ -82,14 +82,19 @@ export default {
   created(){
     this.getRoleList();
     this.getconfInfo();
-  },
-  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"权限设置",
       isActive:true
     });
   },
+ /* activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"权限设置",
+      isActive:true
+    });
+  },*/
   methods:{
     getconfInfo(){
       this.$axios.get(this.$store.commonData.state.url+"Column/Tree")

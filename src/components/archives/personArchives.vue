@@ -340,9 +340,10 @@ export default {
     }
   },
   created(){
+    this.searchPerson();
   },
   activated(){
-     this.searchPerson();
+     
   },
   watch:{
     '$route':"onRouterChange"

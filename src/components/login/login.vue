@@ -56,6 +56,7 @@ export default {
         this.isLogin=false;
         if (response.data.RetCode==0) {
           sessionStorage.setItem("Token", response.data.RetData.Token);
+          sessionStorage.setItem("UserName", response.data.RetData.UserName);
           this.$axios.defaults.headers.common['Token'] = response.data.RetData.Token;
           this.$router.push({ path: "/main" })
           this.$store.commonData.commit('updateToken', response.data.RetData.Token);

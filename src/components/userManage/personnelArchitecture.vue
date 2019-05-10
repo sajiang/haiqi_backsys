@@ -214,14 +214,19 @@ export default {
   created(){
     this.getDepartmentTree();
     this.getRoleList();
-  },
-  activated(){
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"公司人员架构",
       isActive:true
     });
   },
+/*  activated(){
+    this.$store.tabs.commit('assignNewTab', {
+      path:this.$route.path,
+      name:"公司人员架构",
+      isActive:true
+    });
+  },*/
   methods: {
     getDepartmentTree(){
       this.$axios.get(this.$store.commonData.state.url+"Department/Tree")
