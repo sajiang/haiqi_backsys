@@ -46,7 +46,7 @@
       <el-table :data="vipOrderList" :border="true" :fit="true" size="mini" class="table" height="250" :summary-method="getSummaries" :show-summary="showSum" @selection-change="handleSelectionChange" @row-click="getOrderDetail">
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column fixed prop="date" v-if="identity==1||identity==2" label="操作" width="120"></el-table-column>
-        <el-table-column  prop="name" v-if="identity==0||identity==1" label="新消息" width="120"></el-table-column>
+        <el-table-column  prop="name" v-if="identity==0||identity==1" label="状态" width="120"></el-table-column>
         <el-table-column  prop="OrderId" label="提单号" width="120"></el-table-column>
         <el-table-column  prop="CreateDateStr" label="下单日期" width="120"></el-table-column>
         <el-table-column  prop="ShipName" label="船名"  width="120"></el-table-column>
@@ -103,23 +103,34 @@
         <div class="center">
           <span>排序设置</span>
           <el-select size="small" v-model="filter.orderBy" style="width:120px">
-            <el-option label="下单时间" :value="1"></el-option>
-            <el-option label="提单号" :value="2"></el-option>
+            <el-option label="下单时间" value="CreateDate"></el-option>
+            <el-option label="提单号" value="OrderId"></el-option>
+            <el-option label="船名" value="ShipName"></el-option>
+            <!-- <el-option label="货主名" value="2"></el-option> -->
+            <el-option label="毛利" value="Mli"></el-option>
+            <el-option label="船业务员" value="Cyewu"></el-option>
+            <el-option label="货业务员" value="Hyewu"></el-option>
           </el-select>
           <el-select size="small" v-model="filter.orderByType" style="width:80px">
             <el-option label="降序" :value="1" :key="1"></el-option>
             <el-option label="升序" :value="2" :key="2"></el-option>
           </el-select>
         </div>
-        <div>
-           <el-table :data="orderSort.data" style="width: 100%" height="300">
-            <el-table-column prop="name" label="勾选显示列项"></el-table-column>
-            <el-table-column type="selection" width="55"></el-table-column>
-          </el-table>
+        <div class="sortTableContainer">
+          <table>
+            <tr>
+              <td>勾选显示列项</td>
+              <td><el-switch v-model="filter.allCheck"></el-switch></td>
+            </tr>
+            <tr v-for="item in orderSort.data">
+              <td>{{item.name}}</td>
+              <td><el-switch v-model="item.isCheck"></el-switch></td>
+            </tr>
+          </table>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="orderSort.data = false">确 定</el-button>
+        <el-button type="primary" @click="submitSortType">确 定</el-button>
       </span>
     </el-dialog>
     <s-operator-component :visible.sync="sideDrawer.visible" :order-id="sideDrawer.curOrderId"></s-operator-component>
@@ -158,7 +169,25 @@ export default {
       showSum:true,
       orderSort:{
         orderSortVisible:false,
-        data:[{name:"提单号"},{name:"下单日期"},{name:"船名"},{name:"装货港"},{name:"卸货港"},{name:"装货时间"}]
+        data:[
+          {name:"下单日期",key:"CreateDate",isCheck:true},
+          {name:"船名",key:"ShipName",isCheck:true},
+          {name:"装货港",key:"StartPort",isCheck:true},
+          {name:"卸货港",key:"EndPort",isCheck:true},
+          {name:"受载时间",key:"LoadDate",isCheck:true},
+          {name:"货种",key:"GoodsName",isCheck:true},
+          {name:"收价",key:"ShouJia",isCheck:true},
+          {name:"付价",key:"FuJia",isCheck:true},
+          {name:"载货吨",key:"LoadTon",isCheck:true},
+          {name:"装港吨",key:"Zgton",isCheck:true},
+          {name:"应收",key:"Yshou",isCheck:true},
+          {name:"实收",key:"ShiShou",isCheck:true},
+          {name:"应付",key:"Yfu",isCheck:true},
+          {name:"实付",key:"ShiFu",isCheck:true},
+          {name:"毛利",key:"Mli",isCheck:true},
+          {name:"船业务",key:"Cyewu",isCheck:true},
+          {name:"货业务",key:"Hyewu",isCheck:true},
+        ]
       },
       sideDrawer:{
         curOrderId:"",
@@ -175,6 +204,7 @@ export default {
     this.queryIdentity();
     this.searchOrderList();
     this.getOperatorList();
+    this.getSortType();
     this.$store.tabs.commit('assignNewTab', {
       path:this.$route.path,
       name:"vip撮合订单",
@@ -222,6 +252,46 @@ export default {
       }).then((response)=>{
         if (response.data.RetCode==0) {
           this.operatorList=response.data.RetData;
+        }
+      })
+    },
+    submitSortType(){
+      let updata={
+        orderBy:this.filter.orderBy,
+        orderByType:this.filter.orderByType
+      };
+      for (var i = this.orderSort.data.length - 1; i >= 0; i--) {
+        updata[this.orderSort.data[i].key]=0
+        if(!this.orderSort.data[i].isCheck){
+          updata[this.orderSort.data[i].key]=1;
+        }
+      }
+      this.$axios({
+        method: 'post',
+        url: this.$store.commonData.state.url+'Business/Create_YeWuOrderSetItem',
+        data:updata
+      }).then((response)=>{
+        if (response.data.RetCode==0) {
+          this.orderSort.orderSortVisible = false
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
+    },
+    getSortType(){
+      this.$axios({
+        method: 'post',
+        url: this.$store.commonData.state.url+'Business/QueryYeWuOrderSetItem',
+      }).then((response)=>{
+        if (response.data.RetCode==0) {
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
         }
       })
     },
@@ -325,5 +395,15 @@ export default {
     padding:0;
   }
 }
-
+.sortTableContainer{
+  height: 300px;
+  overflow-y: scroll;
+  table{
+    width: 100%;padding: 10px 30px;
+    td{
+      height: 30px;
+      border-bottom:1px solid #EEE;
+    }
+  }
+}
 </style>

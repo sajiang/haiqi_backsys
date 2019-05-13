@@ -476,6 +476,7 @@ export default {
       queryShipList:[],
       queryPortList:[],
       selectLoading:false,
+      businessOrderId:"",
       goodsData:{
         "OrderId": "",
         "A_Name": "",
@@ -570,7 +571,7 @@ export default {
       same:{
         loadDateLimit:""
       },
-      operatorList:[]
+      operatorList:[],
     }
   },
   watch: {
@@ -588,6 +589,7 @@ export default {
         name:"编辑订单",
         isActive:true
       });
+      this.getOrderDetail();
     }else{
       this.$store.tabs.commit('assignNewTab', {
         path:this.$route.path,
@@ -598,6 +600,29 @@ export default {
     this.getOperatorList();
   },
   methods:{
+    getOrderDetail(){
+      const loading = this.$loading({
+        lock: true,
+        text: '加载中',
+      });
+      this.$axios({
+        method: 'post',
+        url: this.$store.commonData.state.url+'Business/QueryContract',
+        data:{OrderId:this.$route.params.id}
+      }).then((response)=>{
+        if (response.data.RetCode==0) {
+          this.businessOrderId=response.data.RetData.BusinessOrderId;
+          this.goodsData=response.data.RetData.goodsModel;
+          this.shipData=response.data.RetData.shipModel;
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+        loading.close();
+      })
+    },
     getOperatorList(){
       this.$axios({
         method: 'post',

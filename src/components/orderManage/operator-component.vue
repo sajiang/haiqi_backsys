@@ -388,14 +388,14 @@
 	          </el-tab-pane>
 	          <el-tab-pane label="文件柜" name="1">
 	          	<div class="imgFileList" :style="imgFileListscroll">
-	          		<div class="textRight">
-		          		<i class="el-icon-delete hand">删除</i>
+	          		<div class="textRight" v-if="identity==1||identity==0" >
+		          		<span @click="submitDeleteImg"><i class="el-icon-delete hand">删除</i></span>
 		          	</div>
 		          	<div class="flexCenter wrap">
 						<label>船合同</label>
 						<div v-for="(item,index) in shipContractPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
-		                  <i class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
+		                  <i v-if="identity==1||identity==0" class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
 		                </div>
 						<div class="uploadImg">
 			              <div class="logo"><i class="el-icon-plus"></i></div>
@@ -405,8 +405,8 @@
 					<div class="flexCenter wrap">
 						<label>货合同</label>
 						<div v-for="(item,index) in goodsContractPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
-		                  <i class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
+		                  <i v-if="identity==1||identity==0" class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
 		                </div>
 						<div class="uploadImg">
 			              <div class="logo"><i class="el-icon-plus"></i></div>
@@ -416,26 +416,26 @@
 					<div class="flexCenter wrap">
 						<label>收凭证</label>
 						<div v-for="(item,index) in receiveVoucherPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
 		                </div>
 					</div>
 					<div class="flexCenter wrap">
 						<label>付凭证</label>
 						<div v-for="(item,index) in payVoucherPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
 		                </div>
 					</div>
 					<div class="flexCenter wrap">
 						<label>运单</label>
 						<div v-for="(item,index) in transOrderPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
 		                </div>
 					</div>
 					<div class="flexCenter wrap">
 						<label>船舶证书</label>
 						<div v-for="(item,index) in shipCertificatePic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
-		                  <i class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
+		                  <i v-if="identity==1||identity==0" class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
 		                </div>
 						<div class="uploadImg">
 			              <div class="logo"><i class="el-icon-plus"></i></div>
@@ -445,8 +445,8 @@
 					<div class="flexCenter wrap">
 						<label>补充协议</label>
 						<div v-for="(item,index) in otherPic.pic" class="relative mgt20">
-		                  <img @click="previewImg(item.imgDataUrl)"  class="previewedImg" :src="item.imgDataUrl">
-		                  <i class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
+		                  <img @click="previewImg(item.Original)"  class="previewedImg" :src="item.Thumbnail">
+		                  <i v-if="identity==1||identity==0" class="el-icon-success checkImg" :class="item.readyToDelete?'checkedImg':''" @click="item.readyToDelete=!item.readyToDelete" ></i>
 		                </div>
 						<div class="uploadImg">
 			              <div class="logo"><i class="el-icon-plus"></i></div>
@@ -699,9 +699,9 @@
 			<table  border="1" cellspacing="0" cellpadding="0" >
 				<tr>
 					<td class="textRight">提单号：</td>
-					<td>kf19-1909</td>
+					<td>{{orderId}}</td>
 					<td class="textRight">船名：</td>
-					<td>1</td>
+					<td>{{orderDetail.ShipName}}</td>
 				</tr>
 				<tr>
 					<td class="textRight">客户：</td>
@@ -883,6 +883,10 @@ export default{
   methods:{
   	getOrderDetail(){
   	  if (!this.orderId) {return;}
+  	  const loading = this.$loading({
+	      lock: true,
+	      text: '加载中',
+	  });
   	  this.$axios({
         method: 'post',
         url: this.$store.commonData.state.url+'Business/QueryBusinessOrderDetail',
@@ -897,6 +901,7 @@ export default{
             type: 'error'
           });
         }
+        loading.close();
       })
   	},
   	queryIdentity(){
@@ -933,26 +938,39 @@ export default{
     },
     queryImgFileList(){
     	if (!this.orderId) {return;}
-	    	this.$axios({
+    	const loading = this.$loading({
+	      lock: true,
+	      text: '加载中',
+	  	});
+	    this.$axios({
 	        method: 'post',
 	        url: this.$store.commonData.state.url+'Business/QueryRelateFile',
 	        data:{OrderId:this.orderId}
 	      }).then((response)=>{
 	        if (response.data.RetCode==0) {
 	        	let retData=response.data.RetData
+	        	retData.A1.forEach((x,i) => x.readyToDelete=false);
+	        	retData.A2.forEach((x,i) => x.readyToDelete=false);
+	        	retData.A6.forEach((x,i) => x.readyToDelete=false);
+	        	retData.A7.forEach((x,i) => x.readyToDelete=false);
 	        	this.shipContractPic.pic=retData.A1;
+	        	this.shipContractPic.BusinessId=retData.ShipContractBusinessId;
 	        	this.goodsContractPic.pic=retData.A2;
+	        	this.goodsContractPic.BusinessId=retData.GoodsContractBusinessId;
 	        	this.receiveVoucherPic.pic=retData.A3;
 	        	this.payVoucherPic.pic=retData.A4;
 	        	this.transOrderPic.pic=retData.A5;
 	        	this.shipCertificatePic.pic=retData.A6;
+	        	this.shipCertificatePic.BusinessId=retData.ZhengShuBusinessId;
 	        	this.otherPic.pic=retData.A7;
+	        	this.otherPic.BusinessId=retData.XieYiBusinessId;
 	        }else{
 	          this.$message({
 	            message: response.data.RetMsg,
 	            type: 'error'
 	          });
 	        }
+	        loading.close();
 	    })
     },
   	fmoney(num){
@@ -1358,28 +1376,84 @@ export default{
       		this[name].removeFileIds.push(item.id);
       	}
     },
+    submitDeleteImg(){
+    	let deleteArr=[];
+    	this.shipContractPic.pic.forEach((x,i) => x.readyToDelete?deleteArr.push(x.Id):"");
+    	this.goodsContractPic.pic.forEach((x,i) => x.readyToDelete?deleteArr.push(x.Id):"");
+    	this.shipCertificatePic.pic.forEach((x,i) => x.readyToDelete?deleteArr.push(x.Id):"");
+    	this.otherPic.pic.forEach((x,i) => x.readyToDelete?deleteArr.push(x.Id):"");
+    	this.$axios({
+	        method: 'post',
+	        data:{OrderFileId:deleteArr.join(",")},
+	        url: this.$store.commonData.state.url+'Business/RemoveRelateFile',
+	      }).then((response)=>{
+	        if (response.data.RetCode==0) {
+	        	this.queryImgFileList();
+	        }else{
+	          this.$message({
+	            message: response.data.RetMsg,
+	            type: 'error'
+	          });
+	        }
+	    });
+    },
+    submitImg(param,labe){
+    	this.$axios({
+	        method: 'post',
+	        url: this.$store.commonData.state.url+'Business/UploadRelateFile',
+	        headers:{'Content-Type':'multipart/form-data'} ,
+	        data:param
+	      }).then((response)=>{
+	        if (response.data.RetCode==0) {
+	        	let retData=response.data.RetData;
+	        	retData.forEach((x,i) => x.readyToDelete=false);
+	        	this[labe].pic=this[labe].pic.concat(retData)
+	        }else{
+	          this.$message({
+	            message: response.data.RetMsg,
+	            type: 'error'
+	          });
+	        }
+	    });
+    },
     saveShipContractPic(e){
-    	e.imgObjs.forEach((x,i) => this.$set(x,"readyToDelete",false));
-      	this.shipContractPic.pic=this.shipContractPic.pic.concat(e.imgObjs);
+    	let param = new FormData(); //创建form对象
+    	e.imgObjs.forEach((x,i) => param.append('file', x.file,x.name));
+  		param.append('OrderId',this.orderDetail.OrderId);
+  		param.append('BusinessId',this.shipContractPic.BusinessId);
+  		param.append('BusinessType',1);
+    	this.submitImg(param,"shipContractPic");
     },
     saveGoodsContractPic(e){
-    	e.imgObjs.forEach((x,i) => this.$set(x,"readyToDelete",false));
-      	this.goodsContractPic.pic=this.goodsContractPic.pic.concat(e.imgObjs);
+      	let param = new FormData(); //创建form对象
+    	e.imgObjs.forEach((x,i) => param.append('file', x.file,x.name));
+  		param.append('OrderId',this.orderDetail.OrderId);
+  		param.append('BusinessId',this.goodsContractPic.BusinessId);
+  		param.append('BusinessType',2);
+    	this.submitImg(param,"goodsContractPic");
     },
     saveShipCertificatePic(e){
-    	e.imgObjs.forEach((x,i) => this.$set(x,"readyToDelete",false));
-      	this.shipCertificatePic.pic=this.shipCertificatePic.pic.concat(e.imgObjs);
+      	let param = new FormData(); //创建form对象
+    	e.imgObjs.forEach((x,i) => param.append('file', x.file,x.name));
+  		param.append('OrderId',this.orderDetail.OrderId);
+  		param.append('BusinessId',this.shipCertificatePic.BusinessId);
+  		param.append('BusinessType',2);
+    	this.submitImg(param,"shipCertificatePic");
     },
     saveOtherPic(e){
-    	e.imgObjs.forEach((x,i) => this.$set(x,"readyToDelete",false));
-      	this.otherPic.pic=this.otherPic.pic.concat(e.imgObjs);
+      	let param = new FormData(); //创建form对象
+    	e.imgObjs.forEach((x,i) => param.append('file', x.file,x.name));
+  		param.append('OrderId',this.orderDetail.OrderId);
+  		param.append('BusinessId',this.otherPic.BusinessId);
+  		param.append('BusinessType',2);
+    	this.submitImg(param,"otherPic");
     },
     previewImg(imgDataUrl){
     	this.previewImgData.visible=true;
     	this.previewImgData.url=imgDataUrl;
     },
     naviToEditOrder(){
-    	common.openNewPage(this,"/main/order/createNewOrder/1");
+    	common.openNewPage(this,`/main/order/createNewOrder/${this.orderId}`);
     }
   }
 }
