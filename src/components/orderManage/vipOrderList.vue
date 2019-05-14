@@ -11,22 +11,24 @@
           <el-option label="纠纷" :value="4" ></el-option>
         </el-select>
         <span class="label">下单日期</span>
-        <el-date-picker size="small"  style="width:125px"
+        <el-date-picker size="small"  style="width:125px" value-format="yyyy-MM-dd"
           v-model="filter.CreateDateMin"
           type="date"
           placeholder="选择日期">
         </el-date-picker>
-        <el-date-picker size="small" style="width:125px"
+        <el-date-picker size="small" style="width:125px" value-format="yyyy-MM-dd"
           v-model="filter.CreateDateMax"
           type="date"
           placeholder="选择日期">
         </el-date-picker>
         <span class="label">货业务</span>
         <el-select size="small" v-model="filter.Hyewu" style="width:70px">
+          <el-option label="全部" value=""></el-option>
           <el-option v-for="item in operatorList" :label="item.UserName" :value="item.UserName" :key="item.Id"></el-option>
         </el-select>
         <span class="label">船业务</span>
         <el-select size="small" v-model="filter.Cyewu" style="width:70px">
+          <el-option label="全部" value=""></el-option>
           <el-option v-for="item in operatorList" :label="item.UserName" :value="item.UserName" :key="item.Id"></el-option>
         </el-select>
         <el-input class="mgl10 input-with-select" placeholder="请输入内容" v-model="filter.KeyWord" style="width:200px" size="small">
@@ -43,36 +45,28 @@
           <el-button  class="fr" type="info" size="small" plain @click="orderSort.orderSortVisible=true">排序</el-button>
         </div>
       </div>
-      <el-table :data="vipOrderList" :border="true" :fit="true" size="mini" class="table" height="250" :summary-method="getSummaries" :show-summary="showSum" @selection-change="handleSelectionChange" @row-click="getOrderDetail">
-        <el-table-column type="selection" width="55"></el-table-column>
+      <el-table ref="table" :data="vipOrderList" :border="true" :fit="true" size="mini" class="table" height="250" :summary-method="getSummaries" :show-summary="showSum" @selection-change="handleSelectionChange" @row-click="getOrderDetail">
+        <el-table-column fixed type="selection" width="55"></el-table-column>
         <el-table-column fixed prop="date" v-if="identity==1||identity==2" label="操作" width="120"></el-table-column>
-        <el-table-column  prop="name" v-if="identity==0||identity==1" label="状态" width="120"></el-table-column>
-        <el-table-column  prop="OrderId" label="提单号" width="120"></el-table-column>
-        <el-table-column  prop="CreateDateStr" label="下单日期" width="120"></el-table-column>
-        <el-table-column  prop="ShipName" label="船名"  width="120"></el-table-column>
-        <el-table-column  prop="StartPort" label="装货港" width="120"></el-table-column>
-        <el-table-column  prop="EndPort" label="卸货港" width="120"></el-table-column>
-        <el-table-column  prop="LoadDateStr" label="受载时间" width="120"></el-table-column>
-        <el-table-column  prop="GoodsName" label="货种"  width="120"></el-table-column>
-        <el-table-column  label="收价"  width="140">
-          <template slot-scope="scope">
-            {{ scope.row.ShouJia }}元 {{scope.row.ShouJiaBoat==1?'包船':'不包船'}}{{scope.row.ShouJiaTax==1?'含税':'不含税'}}
-          </template>
-        </el-table-column>
-        <el-table-column label="付价"  width="140">
-          <template slot-scope="scope">
-            {{ scope.row.FuJia }}元 {{scope.row.FuJiaBoat==1?'包船':'不包船'}}{{scope.row.FuJiaTax==1?'含税':'不含税'}}
-          </template>
-        </el-table-column>
-        <el-table-column  prop="LoadTon" label="载货吨"  width="120"></el-table-column>
-        <el-table-column  prop="city" label="装港吨"  width="120"></el-table-column>
-        <el-table-column  prop="Yshou" label="应收"  width="120"></el-table-column>
-        <el-table-column  prop="ShiShou" label="实收"  width="120"></el-table-column>
-        <el-table-column  prop="Yfu" label="应付"  width="120"></el-table-column>
-        <el-table-column  prop="ShiFu" label="实付"  width="120"></el-table-column>
-        <el-table-column  prop="Mli" label="毛利"  width="120"></el-table-column>
-        <el-table-column prop="Cyewu"  label="船业务" width="120"></el-table-column>
-        <el-table-column prop="Hyewu"  label="货业务" width="120"></el-table-column>
+        <el-table-column fixed prop="name" v-if="identity==0||identity==1" label="状态" width="120"></el-table-column>
+        <el-table-column fixed prop="OrderId" label="提单号" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.CreateDate" prop="CreateDateStr" label="下单日期" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.ShipName"  prop="ShipName" label="船名"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.StartPort"  prop="StartPort" label="装货港" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.EndPort"  prop="EndPort" label="卸货港" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.LoadDate" prop="LoadDateStr" label="受载时间" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.GoodsName" prop="GoodsName" label="货种"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.ShouJia" prop="ShouJiaFormat" label="收价"  width="140"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.FuJia" prop="FuJiaFormat" label="付价"  width="140"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.LoadTon" prop="LoadTon" label="载货吨"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Zgton" prop="Zgton" label="装港吨"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Yshou" prop="Yshou" label="应收"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.ShiShou" prop="ShiShou" label="实收"  width="130"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Yfu" prop="Yfu" label="应付"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.ShiFu" prop="ShiFu" label="实付"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Mli" prop="Mli" label="毛利"  width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Cyewu" prop="Cyewu"  label="船业务" width="120"></el-table-column>
+        <el-table-column v-if="!orderSort.hidden.Hyewu" prop="Hyewu"  label="货业务" width="120"></el-table-column>
       </el-table>
       <div class="flexCenter bottom">
         <div>
@@ -81,7 +75,7 @@
           <span>条/{{totalCount}}条</span>
         </div>
         <div class="operator">
-          <el-button type="text">删除</el-button>
+          <el-button type="text" @click="deleteOrder"  v-if="identity==1||identity==0">删除</el-button>
         </div>
         <div class="flex1"></div>
         <div class="el-pagination"><button class="pageMost" @click="filter.PageIndex=1"><i class="el-icon-d-arrow-left"></i></button></div>
@@ -163,12 +157,12 @@ export default {
       },
       totalCount:1,
       operatorList:[],
-      statusList:[{id:1,name:"全部"}],
       vipOrderList: [],
       selectedRow:[],
       showSum:true,
       orderSort:{
         orderSortVisible:false,
+        hidden:{},
         data:[
           {name:"下单日期",key:"CreateDate",isCheck:true},
           {name:"船名",key:"ShipName",isCheck:true},
@@ -189,6 +183,7 @@ export default {
           {name:"货业务",key:"Hyewu",isCheck:true},
         ]
       },
+      totalSum:{},
       sideDrawer:{
         curOrderId:"",
         visible:false,
@@ -199,6 +194,34 @@ export default {
     pageNum:function(){
       return Math.ceil(this.totalCount/this.filter.PageSize)
     }
+  },
+  watch:{
+    "filter.allCheck":function(newval,oldval){
+      for(let o of this.orderSort.data){
+        o.isCheck=newval;
+      }
+    },
+    "filter.OrderState":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.CreateDateMin":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.CreateDateMax":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.Hyewu":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.Cyewu":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.KeyType":function(newval,oldval){
+      this.searchOrderList();
+    },
+    "filter.KeyWord":function(newval,oldval){
+      this.searchOrderList();
+    },
   },
   created(){
     this.queryIdentity();
@@ -234,8 +257,14 @@ export default {
         data:this.filter
       }).then((response)=>{
         if (response.data.RetCode==0) {
+          let list=response.data.RetData.list;
+          for (var i = list.length - 1; i >= 0; i--) {
+            list[i].ShouJiaFormat=list[i].ShouJia+"元 "+ (list[i].ShouJiaBoat==1?'包船':'不包船')+(list[i].ShouJiaTax==1?'含税':'不含税');
+            list[i].FuJiaFormat=list[i].FuJia+"元 "+ (list[i].FuJiaBoat==1?'包船':'不包船')+(list[i].FuJiaTax==1?'含税':'不含税');
+          } 
           this.vipOrderList=response.data.RetData.list;
           this.totalCount=response.data.RetData.TotalCount;
+          this.totalSum=response.data.RetData.tjModel;
         }else{
           this.$message({
             message: response.data.RetMsg,
@@ -243,6 +272,76 @@ export default {
           });
         }
       })
+    },
+    getSummaries(param){
+      const { columns, data } = param;
+      const sums=[];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总价';
+          return;
+        }
+        let values = [];
+        let total = 0;
+        let isSelectRow=this.selectedRow.length>0
+        if(isSelectRow){
+          values=this.selectedRow.map(item => Number(item[column.property]))
+          total=values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+        }
+        switch (column.property)
+        {
+        case "FuAdjust":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.FuTiaoZheng) 
+          break;
+        case "Mli":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.MaoLi)
+          break;
+        case "ShiFu":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.ShiFu)
+          break;
+        case "ShiShou":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.ShiShou)
+          break;
+        case "ShouAdjust":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.ShouTiaoZheng)
+          break;
+        case "WeiFu":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.WeiFu)
+          break;
+        case "WeiShou":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.WeiShou)
+          break;
+        case "Xgton":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.Xgton)
+          break;
+        case "Zgton":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.Zgton)
+          break;
+        case "LoadTon":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.ZaiHuoDun)
+          break;
+        case "Yfu":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.YingFu)
+          break;
+        case "Yshou":
+          isSelectRow?(sums[index] = total):(sums[index] = this.totalSum.YingShou)
+          break;
+        default:
+          sums[index] = "/"
+        }
+      });
+      return sums;
+    },
+    updateSummaries(rows){
+      this.vipOrderList.push({});
+      this.vipOrderList.pop();
     },
     getOperatorList(){
       this.$axios({
@@ -263,7 +362,7 @@ export default {
       for (var i = this.orderSort.data.length - 1; i >= 0; i--) {
         updata[this.orderSort.data[i].key]=0
         if(!this.orderSort.data[i].isCheck){
-          updata[this.orderSort.data[i].key]=1;
+          updata[this.orderSort.data[i].key]=1; //1隐藏
         }
       }
       this.$axios({
@@ -272,7 +371,9 @@ export default {
         data:updata
       }).then((response)=>{
         if (response.data.RetCode==0) {
-          this.orderSort.orderSortVisible = false
+          this.orderSort.orderSortVisible = false;
+          this.getSortType();
+          this.searchOrderList();
         }else{
           this.$message({
             message: response.data.RetMsg,
@@ -285,8 +386,18 @@ export default {
       this.$axios({
         method: 'post',
         url: this.$store.commonData.state.url+'Business/QueryYeWuOrderSetItem',
+        data:{},
       }).then((response)=>{
         if (response.data.RetCode==0) {
+          this.orderSort.hidden={};
+          for(let o of response.data.RetData.list){
+            this.orderSort.hidden[o.ItemName]=true;
+            for(let i of this.orderSort.data){
+              if (o.ItemName==i.key) {
+                i.isCheck=false;
+              }
+            }
+          }
         }else{
           this.$message({
             message: response.data.RetMsg,
@@ -295,24 +406,31 @@ export default {
         }
       })
     },
-    getSummaries(){
-      let a=Math.random()
-      console.log(a);
-      return ["总计",a,"sdg"]
-    },
     handleSizeChange(val){
       this.filter.PageSize=val;
     },
     handleCurrentChange(val){
-
+      this.filter.PageIndex=val;
+    },
+    deleteOrder(){
+      this.$axios({
+        method: 'post',
+        url: this.$store.commonData.state.url+'Business/RemoveOrder',
+        data:{OrderIds:this.selectedRow.map((item)=>{return item.OrderId}).join(",")},
+      }).then((response)=>{
+        if (response.data.RetCode==0) {
+          this.searchOrderList();
+        }else{
+          this.$message({
+            message: response.data.RetMsg,
+            type: 'error'
+          });
+        }
+      })
     },
     handleSelectionChange(val) {
       this.selectedRow = val;
-      this.showSum=false;
-      this.$nextTick()
-      .then( ()=> {
-        this.showSum=true;
-      })
+      this.updateSummaries();
     },
     toCreateNewOrderPage(){
       common.openNewPage(this,"/main/order/createNewOrder");

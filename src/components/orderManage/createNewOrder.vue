@@ -118,7 +118,7 @@
           </tr>
            <tr>
             <td class="nameLabel col1">合同号</td>
-            <td class="col2"><div class="flex"><input type="" v-model="goodsData.OrderId"></div></td>
+            <td class="col2"><div class="flex"><input type="" :disabled="businessOrderId?true:false" v-model="goodsData.OrderId"></div></td>
             <td class="col3 nameLabel">货名</td>
             <td class="col4"><div class="flex"><input type="" v-model="goodsData.GoodsName"></div></td>
             <td class="nameLabel col4">包装</td>
@@ -169,7 +169,9 @@
               </el-select>
             </td>
             <td class="nameLabel">运到期限</td>
-            <td><input type="number" name="" v-model="goodsData.To_limit"></td>
+            <td>
+              <el-date-picker value-format="yyyy-MM-dd" class="loadDateLimit" size="mini" :clearable="false" v-model="goodsData.To_limit" type="date" placeholder="选择日期"></el-date-picker>
+            </td>
             <td class="nameLabel">卸船期限</td>
             <td ><input class="midNum" type="number" name="" v-model="goodsData.Discharging">天</td>
             <td class="nameLabel">运价</td>
@@ -349,7 +351,7 @@
           </tr>
            <tr>
             <td class="nameLabel col1">合同号</td>
-            <td class="col2"><div class="flex"><input type="" v-model="shipData.OrderId"></div></td>
+            <td class="col2"><div class="flex"><input type="" :disabled="businessOrderId?true:false" v-model="shipData.OrderId"></div></td>
             <td class="col3 nameLabel">货名</td>
             <td class="col4"><div class="flex"><input type="" v-model="shipData.GoodsName"></div></td>
             <td class="nameLabel col4">包装</td>
@@ -400,7 +402,7 @@
               </el-select>
             </td>
             <td class="nameLabel">运到期限</td>
-            <td><input type="number" name="" v-model="shipData.To_limit"></td>
+            <td><el-date-picker value-format="yyyy-MM-dd" class="loadDateLimit" size="mini" :clearable="false" v-model="shipData.To_limit" type="date" placeholder="选择日期"></el-date-picker></td>
             <td class="nameLabel">卸船期限</td>
             <td ><input class="midNum" type="number" name="" v-model="shipData.Discharging">天</td>
             <td class="nameLabel">运价</td>
@@ -614,6 +616,8 @@ export default {
           this.businessOrderId=response.data.RetData.BusinessOrderId;
           this.goodsData=response.data.RetData.goodsModel;
           this.shipData=response.data.RetData.shipModel;
+          this.$refs.goodsDetail.innerHTML=this.goodsData.ConTractDetail;
+          this.$refs.shipDetail.innerHTML=this.shipData.ConTractDetail;
         }else{
           this.$message({
             message: response.data.RetMsg,
@@ -797,24 +801,48 @@ export default {
     saveContract(){
       this.goodsData.ConTractDetail=this.$refs.goodsDetail.innerHTML.replace(/<div data-\S*">/g,"<div>");
       this.shipData.ConTractDetail=this.$refs.shipDetail.innerHTML.replace(/<div data-\S*">/g,"<div>");
-      this.$axios({
-        method: 'post',
-        data:{
-          ShipParms:this.shipData,
-          GoodsParms:this.goodsData
-        },
-        url: this.$store.commonData.state.url+'Business/CreateContract',
-        
-      }).then((response)=>{
-        if (response.data.RetCode==0) {
-          common.openNewPage(this,"/main/orderManage/vipOrderList")
-        }else{
-          this.$message({
-            message: response.data.RetMsg,
-            type: 'error'
-          });
-        }
-      });
+      if (this.businessOrderId) {
+        //编辑
+        this.$axios({
+          method: 'post',
+          data:{
+            BusinessOrderId:this.businessOrderId,
+            ShipParms:this.shipData,
+            GoodsParms:this.goodsData
+          },
+          url: this.$store.commonData.state.url+'Business/SaveShipAndGoodsContract',
+          
+        }).then((response)=>{
+          if (response.data.RetCode==0) {
+            common.openNewPage(this,"/main/order/vipOrderList")
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        });
+      }else{
+        //新建
+        this.$axios({
+          method: 'post',
+          data:{
+            ShipParms:this.shipData,
+            GoodsParms:this.goodsData
+          },
+          url: this.$store.commonData.state.url+'Business/CreateContract',
+          
+        }).then((response)=>{
+          if (response.data.RetCode==0) {
+            common.openNewPage(this,"/main/order/vipOrderList")
+          }else{
+            this.$message({
+              message: response.data.RetMsg,
+              type: 'error'
+            });
+          }
+        });
+      }
     },
     underLine(){
       console.log(2)
